@@ -12,9 +12,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     master.vm.hostname = "master"
 
     master.vm.provision "docker"
-    master.vm.provision :shell, :path => "all.sh"
-    master.vm.provision :shell, :path => "hosts.sh", :args => "'%d'" % numNodes
-    master.vm.provision :shell, :path => "master.sh", :args => "'%d'" % numNodes
+    master.vm.provision :shell, :path => "scripts/all.sh"
+    master.vm.provision :shell, :path => "scripts/hosts.sh", :args => "'%d'" % numNodes
+    master.vm.provision :shell, :path => "scripts/master.sh", :args => "'%d'" % numNodes
   end
 
   1.upto(numNodes) do |num|
@@ -26,9 +26,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.hostname = "slave" + num.to_s
 
       node.vm.provision "docker"
-      node.vm.provision :shell, :path => "all.sh"
-      node.vm.provision :shell, :path => "hosts.sh", :args => "'%d'" % numNodes
-      node.vm.provision :shell, :path => "slave.sh", :args => "'%d'" % num
+      node.vm.provision :shell, :path => "scripts/all.sh"
+      node.vm.provision :shell, :path => "scripts/hosts.sh", :args => "'%d'" % numNodes
+      node.vm.provision :shell, :path => "scripts/slave.sh", :args => "'%d'" % num
     end
   end
 end
