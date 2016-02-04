@@ -13,7 +13,17 @@ Build/Run Requirements
 - Virtualbox
 - Go
 
-Setup
+Download
+--------
+You can download and compile the project with:
+
+  go get github.com/dizk/docquer
+  cd $GOPATH/src/github.com/dizk/docquer
+  go build
+
+After building you can run it on a torque cluster provided by vagrant.
+
+Run
 -----
 The following command builds a three part virtual Torque cluster with 1 master host and 2 slaves.
 
