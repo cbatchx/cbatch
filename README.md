@@ -17,9 +17,9 @@ Download
 --------
 You can download and compile the project with:
 
-  $ go get github.com/dizk/docquer
-  $ cd $GOPATH/src/github.com/dizk/docquer
-  $ go build
+	$ go get github.com/dizk/docquer
+	$ cd $GOPATH/src/github.com/dizk/docquer
+	$ go build
 
 After building you can run it on a torque cluster provided by vagrant.
 
@@ -27,7 +27,7 @@ Run
 -----
 The following command builds a three part virtual Torque cluster with 1 master host and 2 slaves.
 
-  $ NODES=2 vagrant up
+	$ NODES=2 vagrant up
 
 `NODES` defines the number of slave nodes that will be created for the cluster.
 
@@ -42,7 +42,7 @@ Suspend
 
 Take Down
 ---------
-  $ NODES=2 vagrant destroy
+	$ NODES=2 vagrant destroy
 
 
 Vagrant setup is built upon crcollins/torquecluster
