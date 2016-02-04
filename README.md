@@ -1,6 +1,6 @@
-Docquer
+Docquer - Homogeneous Torque
 ================
-A simple torque cluster running the work inside a docker container. All inside vagrant VMs
+A simple torque cluster running the work inside a docker container. Comes with a Vagrant cluster if you want to test it.
 
 It uses a simple torque wrapper script in qsubfilters/docker_pbs_wrapper.sh. It just copies the script sent in by qsub and executes in an ubuntu:14.04 container.
 
@@ -11,7 +11,7 @@ Build/Run Requirements
 
 - Vagrant
 - Virtualbox
-
+- Go
 
 Setup
 -----
@@ -35,4 +35,4 @@ Take Down
     $ NODES=2 vagrant destroy
 
 
-Built upon crcollins/torquecluster
+Vagrant setup is built upon crcollins/torquecluster

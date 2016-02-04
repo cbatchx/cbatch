@@ -1,0 +1,9 @@
+[Unit]
+Description=Docquer - Homogeneous Torque
+
+[Service]
+Type=simple
+ExecStart=/vagrant/docquer
+
+[Install]
+WantedBy=multi-user.target
