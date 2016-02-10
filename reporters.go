@@ -24,7 +24,7 @@ func placePrologueScript() {
 		log.Fatal(err)
 	}
 
-	log.Println("Created Prologue file")
+	log.Println("Created Prologue file: " + mompriv + prologueName)
 }
 
 func removePrologueScript() {
@@ -33,7 +33,7 @@ func removePrologueScript() {
 		log.Fatal(err)
 	}
 
-	log.Println("Deleted Prologue file")
+	log.Println("Deleted Prologue file: " + mompriv + prologueName)
 }
 
 func placeEpilogueScript() {
@@ -42,7 +42,7 @@ func placeEpilogueScript() {
 		log.Fatal(err)
 	}
 
-	log.Println("Created Epilogue file")
+	log.Println("Created Epilogue file: " + mompriv + epilogueName)
 }
 
 func removeEpilogueScript() {
@@ -51,7 +51,7 @@ func removeEpilogueScript() {
 		log.Fatal(err)
 	}
 
-	log.Println("Deleted Epilogue file")
+	log.Println("Deleted Epilogue file: " + mompriv + epilogueName)
 }
 
 func writeScript(path, script string) error {

@@ -46,20 +46,25 @@ func doneJobHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Done job: %v \n", j)
 }
 
+func cleanUp() {
+	RemoveReporters()
+}
+
 func main() {
 	PlaceReporters()
 
-	go func() {
-		sigchan := make(chan os.Signal, 10)
-		signal.Notify(sigchan, os.Interrupt)
-		<-sigchan
-
-		// When we get a signal just exit and Clean up
-		RemoveReporters()
-		os.Exit(0)
-	}()
+	sigchan := make(chan os.Signal, 1)
+	signal.Notify(sigchan, os.Interrupt, os.Kill)
 
 	http.HandleFunc("/new", newJobHandler)
 	http.HandleFunc("/done", doneJobHandler)
 	http.ListenAndServe(":8080", nil)
+
+	go func() {
+		<-sigchan
+		// When we get a signal just exit and Clean up
+
+		cleanUp()
+		os.Exit(0)
+	}()
 }

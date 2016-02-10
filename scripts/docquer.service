@@ -2,8 +2,8 @@
 Description=Docquer - Homogeneous Torque
 
 [Service]
-Type=simple
-ExecStart=/vagrant/docquer
+ExecStart=/home/vagrant/sync/docquer
+KillSignal=SIGINT
 
 [Install]
 WantedBy=multi-user.target
