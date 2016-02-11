@@ -7,7 +7,7 @@ yum -y install epel-release
 
 # yum -y --nogpgcheck localinstall torque.rpm torque-client.rpm
 
-mkdir -p /var/lib/torque/mom_pri
+mkdir -p /var/lib/torque/mom_priv
 cat > /var/lib/torque/mom_priv/config <<EOF
 \$pbsserver      master
 \$logevent       255
