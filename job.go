@@ -1,7 +1,7 @@
 package main
 
 const (
-	jobFolder        = "/var/spool/torque/mom_priv/jobs/"
+	jobFolder        = mompriv + "jobs/"
 	scriptFileEnding = ".SC"
 )
 

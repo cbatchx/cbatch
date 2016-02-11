@@ -26,7 +26,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	b, err = ioutil.ReadAll(s)
 
 	log.Printf("New job: %v \n", j)
-	log.Printf("Shell script %v", string(b))
+	log.Printf("Shell script:\n%v", string(b))
 }
 
 func execHandler(w http.ResponseWriter, r *http.Request) {
