@@ -1,5 +1,10 @@
 package main
 
+import (
+	"encoding/json"
+	"io"
+)
+
 const (
 	jobFolder        = mompriv + "jobs/"
 	scriptFileEnding = ".SC"
@@ -30,4 +35,12 @@ type Job struct {
 // GetScript gets the Script of the job
 func (j *Job) GetScript() *Script {
 	return &Script{jobFolder + j.ID + scriptFileEnding, nil}
+}
+
+// DecodeJob Decodes a job
+func DecodeJob(r io.Reader) (Job, error) {
+	var j Job
+	dec := json.NewDecoder(r)
+	err := dec.Decode(&j)
+	return j, err
 }

@@ -13,29 +13,16 @@ const (
 	momlock          = "mom.lock"
 	configname       = "config"
 	configbackupname = "config.bak"
-	jobStartername   = "djobstarter"
+	jobStartername   = "jobstarter"
 	prologueName     = "prologue"
 	epilogueName     = "epilogue"
-
-	bashHeader = "#!/bin/sh \n"
-	curl       = `curl -H "Content-Type: application/json" -X POST -d`
-	// http://docs.adaptivecomputing.com/torque/6-0-0/help.htm#topics/torque/13-appendices/scriptEnvironment.htm
-	prologueJSON = ` "{ \"jobid\":\"$1\", \"user\":\"$2\", \"group\":\"$3\", \"jobname\":\"$4\", \"resourcelimits\":\"$5\", \"jobqueue\":\"$6\", \"jobaccount\":\"$7\" }" `
-	newPath      = "http://localhost:8080/new \n"
-
-	epilogueJSON = ` "{ \"jobid\":\"$1\", \"user\":\"$2\", \"group\":\"$3\", \"jobname\":\"$4\", \"sessionid\":\"$5\", \"resourcelimits\":\"$6\", \"resourcesused\":\"$7\", \"jobqueue\":\"$8\", \"jobaccount\":\"$9\", \"jobexitcode\":\"$10\" }" `
-	donePath     = "http://localhost:8080/done \n"
-
-	jobStarterJSON   = ` "{ \"cmd\":\"$*\", \"jobid\":\"$PBS_JOBID\" }" `
-	jobStarterPath   = "http://localhost:8080/exec \n"
-	jobStarterScript = "$*\n"
 )
 
 var oldConfig []byte
 
 func placeJobStarterScript() error {
 	err := writeScript(mompriv+jobStartername,
-		bashHeader+curl+jobStarterJSON+jobStarterPath+jobStarterScript,
+		jobstartersh,
 		0555)
 	if err != nil {
 		return err
@@ -128,7 +115,7 @@ func configRevert() error {
 
 func placePrologueScript() error {
 	err := writeScript(mompriv+prologueName,
-		bashHeader+curl+prologueJSON+newPath,
+		prologuesh,
 		0500)
 	if err != nil {
 		return err
@@ -149,7 +136,7 @@ func removePrologueScript() error {
 }
 
 func placeEpilogueScript() error {
-	err := writeScript(mompriv+epilogueName, bashHeader+curl+epilogueJSON+donePath, 0500)
+	err := writeScript(mompriv+epilogueName, epiloguesh, 0500)
 	if err != nil {
 		return err
 	}
