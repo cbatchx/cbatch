@@ -10,7 +10,6 @@ import (
 )
 
 const (
-	mompriv          = "/var/spool/torque/mom_priv/"
 	momlock          = "mom.lock"
 	configname       = "config"
 	configbackupname = "config.bak"

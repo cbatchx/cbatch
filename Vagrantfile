@@ -7,7 +7,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   numNodes = ENV["NODES"].to_i
   puts numNodes
   config.vm.define :master do |master|
-    master.vm.box = "centos/7"
+    master.vm.box = "bento/centos-7.2"
     master.vm.network :private_network, ip: "192.168.1.100"
     master.vm.hostname = "master"
 
@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     nodeName = ("slave" + num.to_s).to_sym
     val = num + 100
     config.vm.define nodeName do |node|
-      node.vm.box = "centos/7"
+      node.vm.box = "bento/centos-7.2"
       node.vm.network :private_network, ip: "192.168.1." + val.to_s
       node.vm.hostname = "slave" + num.to_s
 

@@ -1,15 +1,25 @@
 #!/bin/bash
-yum -y install wget
+yum -y install epel-release
 
 # Install Torque server
-wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1.2/torque-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque.rpm
-wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1.2/torque-server-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque-server.rpm
-wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1.2/torque-scheduler-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque-scheduler.rpm
+#wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1.2/torque-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque.rpm
+#wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1.2/torque-server-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque-server.rpm
+#wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1.2/torque-scheduler-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque-scheduler.rpm
 
-yum -y --nogpgcheck localinstall torque.rpm torque-server.rpm torque-scheduler.rpm
+#yum -y --nogpgcheck localinstall torque.rpm torque-server.rpm torque-scheduler.rpm
 
-echo $HOSTNAME > /var/spool/torque/server_name
-mkdir -p /var/spool/torque/checkpoint/ # Folder required by pbs_server
+echo $HOSTNAME > /etc/torque/server_name
+
+yum -y install torque-scheduler torque-server torque-client
+
+# Fixing stuff...
+dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024
+chmod 400 /etc/munge/munge.key
+chown munge:munge /etc/munge/munge.key
+systemctl enable munge.service
+systemctl start munge.service
+systemctl enable trqauthd.service
+systemctl start trqauthd.service
 
 yes | pbs_server -t create
 qmgr -c "set server acl_hosts=master"
@@ -24,13 +34,21 @@ qmgr -c "set server keep_completed = 10"
 qterm
 
 # Build up the nodes file
-: > /var/spool/torque/server_priv/nodes
-for i in `seq 1 $1`; do echo  "slave$i np=1" >> /var/spool/torque/server_priv/nodes; done
+: > /var/lib/torque/server_priv/nodes
+for i in `seq 1 $1`; do echo  "slave$i np=1" >> /var/lib/torque/server_priv/nodes; done
 
 # Enable and start services
-systemctl enable trqauthd.service
-systemctl start trqauthd.service
 systemctl enable pbs_server.service
 systemctl start pbs_server.service
 systemctl enable pbs_sched.service
 systemctl start pbs_sched.service
+
+# Configure NFS
+systemctl enable rpcbind
+systemctl enable nfs-server
+systemctl start rpcbind
+systemctl start nfs-server
+
+# This is only a test setup, this is not secure
+echo "/home *(rw,sync,no_root_squash,no_all_squash)" > /etc/exports
+systemctl restart nfs-server
