@@ -24,6 +24,7 @@ type Job struct {
 	ResourceLimits string `json:"resourcelimits"`
 	Queue          string `json:"jobqueue"`
 	Account        string `json:"jobaccount"`
+	Cmd            string `json:"cmd"`
 }
 
 // GetScript gets the Script of the job

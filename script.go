@@ -57,15 +57,5 @@ func (s *Script) Close() error {
 
 // Clear out the content of the file
 func (s *Script) Clear() error {
-	err := s.file.Truncate(0)
-	if err != nil {
-		return err
-	}
-
-	_, err = s.file.Seek(0, 0)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return ClearFile(s.file)
 }
