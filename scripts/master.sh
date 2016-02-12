@@ -1,8 +1,6 @@
 #!/bin/bash
 yum -y install epel-release
 
-echo $HOSTNAME > /etc/torque/server_name
-
 yum -y install torque-scheduler torque-server torque-client
 
 # Fixing stuff...
@@ -11,6 +9,9 @@ chmod 400 /etc/munge/munge.key
 chown munge:munge /etc/munge/munge.key
 systemctl enable munge.service
 systemctl start munge.service
+
+echo $HOSTNAME > /etc/torque/server_name
+
 systemctl enable trqauthd.service
 systemctl start trqauthd.service
 

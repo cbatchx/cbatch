@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -12,14 +11,14 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	s := j.GetScript()
-	s.Open()
-	defer s.Close()
-	b, err := ioutil.ReadAll(s)
-
 	log.Printf("New job: %v \n", j)
-	log.Printf("Shell script:\n%v", string(b))
+
+	//err = j.CreateRunImage()
+	// if err != nil {
+	//	log.Fatal(err)
+	//}
+
+	log.Printf("Started container %v \n", j.Container)
 }
 
 func execHandler(w http.ResponseWriter, r *http.Request) {
