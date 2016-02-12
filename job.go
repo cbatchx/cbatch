@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os/user"
 
 	"github.com/dizk/docquer/Godeps/_workspace/src/github.com/fsouza/go-dockerclient"
@@ -35,6 +35,7 @@ type Job struct {
 	Queue          string            `json:"jobqueue"`
 	Account        string            `json:"jobaccount"`
 	Cmd            string            `json:"cmd"`
+	ImageName      string            `json:"-"`
 	Container      *docker.Container `json:"-"`
 	User           *user.User        `json:"-"`
 }
@@ -54,43 +55,47 @@ func (j *Job) setUser() error {
 	return nil
 }
 
-// CreateRunImage creates a image for basic running of the image
-func (j *Job) CreateRunImage() error {
+// CreateImage creates a image for basic running of the image
+func (j *Job) CreateImage() error {
 	err := j.setUser()
 	if err != nil {
 		return err
 	}
+
+	groupadd := fmt.Sprintf("groupadd -f -g %v %v", j.User.Gid, j.Group)
+	useradd := fmt.Sprintf("useradd -u %v -g %v %v", j.User.Uid, j.Group, j.User.Username)
+	mkdir := fmt.Sprintf("mkdir --parent %v", j.User.HomeDir)
+	chown := fmt.Sprintf("chown -R %v:%v %v", j.User.Username, j.Group, j.User.HomeDir)
+
+	d := DockerFile{
+		From: j.ImageName,
+		Run:  []string{groupadd, useradd, mkdir, chown},
+		User: j.User.Username,
+		Cmd:  "/bin/bash -c tail -f /dev/null",
+	}
+
+	in, err := GetTarBuf(d)
+	if err != nil {
+		return err
+	}
+	out := new(bytes.Buffer)
 
 	client, err := docker.NewClientFromEnv()
 	if err != nil {
 		return err
 	}
 
-	// Dont set this on the user only used to create new image
-	c, err := client.CreateContainer(docker.CreateContainerOptions{
-		Config:     j.getUserInsertContainerConfig(),
-		HostConfig: getDefaultHostConfig(),
+	err = client.BuildImage(docker.BuildImageOptions{
+		Name:         j.ID,
+		InputStream:  in,
+		OutputStream: out,
 	})
+
 	if err != nil {
 		return err
 	}
-	log.Printf("Created temporary container %v \n", c)
 
-	err = client.StartContainer(c.ID, c.HostConfig)
-	if err != nil {
-		return err
-	}
-	log.Printf("Started temporary container %v \n", c)
-
-	// img, err := client.CommitContainer(docker.CommitContainerOptions{
-	//	Container: c.ID,
-	//	Run:       j.getDefaultContainerConfig(),
-	//})
-	//	if err != nil {
-	//		return err
-	//	}
-
-	//log.Printf("Created new image %v \n", img)
+	j.ImageName = j.ID
 
 	return nil
 }
@@ -103,7 +108,6 @@ func (j *Job) StartContainer() error {
 	}
 
 	c, err := client.CreateContainer(docker.CreateContainerOptions{
-		Name:       "",
 		Config:     j.getDefaultContainerConfig(),
 		HostConfig: getDefaultHostConfig(),
 	})
@@ -128,25 +132,6 @@ func DecodeJob(r io.Reader) (*Job, error) {
 	return &j, err
 }
 
-func (j *Job) getUserInsertContainerConfig() *docker.Config {
-	groupadd := fmt.Sprintf("groupadd -f -g %v %v", j.User.Gid, j.Group)
-	useradd := fmt.Sprintf("useradd -u %v -g %v %v", j.User.Uid, j.Group, j.User.Username)
-	mkdir := fmt.Sprintf("mkdir --parent %v", j.User.HomeDir)
-	chown := fmt.Sprintf("chown -R %v:%v %v", j.User.Username, j.Group, j.User.HomeDir)
-	cmd := fmt.Sprintf("/bin/bash -c \" %v && %v && %v && %v", groupadd, useradd, mkdir, chown)
-
-	return &docker.Config{
-		AttachStdin:  false,
-		AttachStdout: false,
-		AttachStderr: false,
-		Tty:          false,
-		OpenStdin:    false,
-		StdinOnce:    false,
-		Image:        "centos:latest",
-		Cmd:          []string{cmd},
-	}
-}
-
 func (j *Job) getDefaultContainerConfig() *docker.Config {
 	return &docker.Config{
 		User:         j.User.Username,
@@ -156,8 +141,8 @@ func (j *Job) getDefaultContainerConfig() *docker.Config {
 		Tty:          false,
 		OpenStdin:    false,
 		StdinOnce:    false,
-		Image:        "centos:latest",
-		Cmd:          []string{"tail -f /dev/null"},
+		Image:        j.ImageName,
+		Cmd:          []string{"/bin/bash", "-c", "tail -f /dev/null"},
 	}
 }
 

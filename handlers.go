@@ -11,14 +11,22 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("New job: %v \n", j)
+	log.Printf("[JOB: %v] New job: %v \n", j.ID, j)
 
-	//err = j.CreateRunImage()
-	// if err != nil {
-	//	log.Fatal(err)
-	//}
+	// TODO move to config
+	j.ImageName = "centos:latest"
 
-	log.Printf("Started container %v \n", j.Container)
+	err = j.CreateImage()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("[JOB: %v] Built image for job: %v \n", j.ID, j)
+
+	err = j.StartContainer()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("[JOB: %v] Started container: %v \n", j.ID, j.Container)
 }
 
 func execHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +38,7 @@ func execHandler(w http.ResponseWriter, r *http.Request) {
 	s := fmt.Sprintf("export %v=\"%v\"; export %v=\"%v\"", shellErrorEnvVar, "nil", shellContainerEnvVar, "7123456-erf2-341")
 	w.Write([]byte(s))
 
-	log.Printf("Mom is now executing %v \n", j)
+	log.Printf("[JOB: %v] Mom is now executing %v \n", j.ID, j)
 }
 
 func doneHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,5 +47,5 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	log.Printf("Done job: %v \n", j)
+	log.Printf("[JOB: %v] Done job: %v \n", j.ID, j)
 }
