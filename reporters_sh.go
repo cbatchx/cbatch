@@ -13,7 +13,10 @@ curl -s -H "Content-Type: application/json" -X POST -d "{ \"jobid\":\"$1\", \"us
 // TODO: need to actually start docker :D
 const jobstartersh = `#!/bin/sh
 resp=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"cmd\":\"$*\", \"jobid\":\"$PBS_JOBID\" }" http://localhost:8080/exec)
+
+# TODO potential security risk?
 eval $resp
+
 # Check if we need to exit with error
 if [ $DOC_ERR != "nil" ]
   then
@@ -24,8 +27,8 @@ fi
 # Run in container
 if [ -n $DOC_CONTAINER ]
   then
-    export info="Would have started docker"
-    $*
+    export info="Started docker"
+    docker exec -i $DOC_CONTAINER $*
 fi
 # Run on host
 if [ -z $DOC_CONTAINER ]

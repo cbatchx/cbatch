@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os/user"
 
 	"github.com/dizk/docquer/Godeps/_workspace/src/github.com/fsouza/go-dockerclient"
@@ -36,13 +37,22 @@ type Job struct {
 	Account        string            `json:"jobaccount"`
 	Cmd            string            `json:"cmd"`
 	ImageName      string            `json:"-"`
+	ScriptPath     string            `json:"-"`
 	Container      *docker.Container `json:"-"`
 	User           *user.User        `json:"-"`
 }
 
-// GetScript gets the Script of the job
-func (j *Job) GetScript() *Script {
-	return &Script{jobFolder + j.ID + scriptFileEnding, nil}
+// InitJob Initialize job
+func (j *Job) InitJob() error {
+	// Set the path to the script
+	j.ScriptPath = jobFolder + j.ID + scriptFileEnding
+	// Set User struct
+	err := j.setUser()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (j *Job) setUser() error {
@@ -57,10 +67,6 @@ func (j *Job) setUser() error {
 
 // CreateImage creates a image for basic running of the image
 func (j *Job) CreateImage() error {
-	err := j.setUser()
-	if err != nil {
-		return err
-	}
 
 	groupadd := fmt.Sprintf("groupadd -f -g %v %v", j.User.Gid, j.Group)
 	useradd := fmt.Sprintf("useradd -u %v -g %v %v", j.User.Uid, j.Group, j.User.Username)
@@ -89,8 +95,8 @@ func (j *Job) CreateImage() error {
 		Name:         j.ID,
 		InputStream:  in,
 		OutputStream: out,
+		Pull:         true,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -109,7 +115,7 @@ func (j *Job) StartContainer() error {
 
 	c, err := client.CreateContainer(docker.CreateContainerOptions{
 		Config:     j.getDefaultContainerConfig(),
-		HostConfig: getDefaultHostConfig(),
+		HostConfig: j.getDefaultHostConfig(),
 	})
 	if err != nil {
 		return err
@@ -124,12 +130,60 @@ func (j *Job) StartContainer() error {
 	return nil
 }
 
+// StopContainer a
+func (j *Job) StopContainer() error {
+	client, err := docker.NewClientFromEnv()
+	if err != nil {
+		return err
+	}
+
+	err = client.StopContainer(j.Container.ID, 0)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RemoveContainer deletes a container
+func (j *Job) RemoveContainer() error {
+	client, err := docker.NewClientFromEnv()
+	if err != nil {
+		return err
+	}
+
+	err = client.RemoveContainer(docker.RemoveContainerOptions{
+		ID:            j.Container.ID,
+		RemoveVolumes: true,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RemoveImage deletes an image
+func (j *Job) RemoveImage() error {
+	client, err := docker.NewClientFromEnv()
+	if err != nil {
+		return err
+	}
+
+	err = client.RemoveImage(j.ImageName)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // DecodeJob Decodes a job
-func DecodeJob(r io.Reader) (*Job, error) {
+func DecodeJob(r io.Reader) (Job, error) {
 	var j Job
 	dec := json.NewDecoder(r)
 	err := dec.Decode(&j)
-	return &j, err
+	return j, err
 }
 
 func (j *Job) getDefaultContainerConfig() *docker.Config {
@@ -143,9 +197,20 @@ func (j *Job) getDefaultContainerConfig() *docker.Config {
 		StdinOnce:    false,
 		Image:        j.ImageName,
 		Cmd:          []string{"/bin/bash", "-c", "tail -f /dev/null"},
+		// Mounts:       []docker.Mount{j.getScriptMount()},
 	}
 }
 
-func getDefaultHostConfig() *docker.HostConfig {
-	return &docker.HostConfig{}
+func (j *Job) getDefaultHostConfig() *docker.HostConfig {
+	scriptBind := fmt.Sprintf("%v:%v", j.ScriptPath, j.ScriptPath)
+	hc := docker.HostConfig{Binds: []string{scriptBind}}
+	log.Printf("[JOB: %v] Using hostconfig: %v\n", j.ID, hc)
+	return &hc
+}
+
+func (j *Job) getScriptMount() docker.Mount {
+	return docker.Mount{
+		Source:      j.ScriptPath,
+		Destination: j.ScriptPath,
+	}
 }

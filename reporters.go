@@ -82,7 +82,7 @@ func configChange() error {
 	}
 
 	oldConfig = b
-	newConfig := string(oldConfig) + "$job_starter " + mompriv + jobStartername + "\n"
+	newConfig := string(oldConfig) + "$job_starter " + mompriv + jobStartername + "\n" + "$job_starter_run_privileged true\n"
 
 	err = ioutil.WriteFile(mompriv+configname, []byte(newConfig), 0644)
 	if err != nil {

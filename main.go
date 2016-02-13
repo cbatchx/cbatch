@@ -24,8 +24,9 @@ func main() {
 		os.Exit(0)
 	}()
 
-	http.HandleFunc("/new", newHandler)
-	http.HandleFunc("/exec", execHandler)
-	http.HandleFunc("/done", doneHandler)
+	js := NewJobStore()
+	http.HandleFunc("/new", newHandler(js))
+	http.HandleFunc("/exec", execHandler(js))
+	http.HandleFunc("/done", doneHandler(js))
 	http.ListenAndServe(":8080", nil)
 }
