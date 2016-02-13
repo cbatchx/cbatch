@@ -18,22 +18,23 @@ resp=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"cmd\":\"$*\",
 eval $resp
 
 # Check if we need to exit with error
-if [ $DOC_ERR != "nil" ]
-  then
-    export info="Encountered some error"
-    $*
-    exit 1
+if [ $DOC_ERR != "nil" ]; then
+  export info="Encountered some error"
+  $*
+  exit 1
 fi
+
 # Run in container
-if [ -n $DOC_CONTAINER ]
-  then
-    export info="Started docker"
+if [ -n $DOC_CONTAINER ]; then
+  if [ $PBS_ENVIRONMENT == "PBS_INTERACTIVE" ]; then
+    docker exec -it $DOC_CONTAINER $*
+  else
     docker exec -i $DOC_CONTAINER $*
+  fi
 fi
+
 # Run on host
-if [ -z $DOC_CONTAINER ]
-  then
-    export info="Normal job"
-    $*
+if [ -z $DOC_CONTAINER ]; then
+  $*
 fi
 `
