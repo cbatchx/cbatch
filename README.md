@@ -2,10 +2,9 @@ Docquer - Homogeneous Torque
 ================
 A simple torque cluster running the work inside a docker container. Comes with a Vagrant cluster if you want to test it.
 
-It uses a simple torque wrapper script in qsubfilters/docker_pbs_wrapper.sh. It just copies the script sent in by qsub and executes in an ubuntu:14.04 container.
+And a daemon implemented in Go which manages the containers. The daemon must run on each of the Torque MOM nodes.
 
-
-_______________________________________________________________________
+________________________________________________________________________________
 Build/Run Requirements
 ----------------------
 
@@ -36,6 +35,9 @@ Access
 	$ vagrant ssh master
 	$ echo 'echo "Hello Docquer"' | qsub
 
+You can also ssh into `slave1`, `slave2` etc. to look at the logs.  
+
+
 Suspend
 -------
 	$ NODES=2 vagrant suspend
@@ -44,5 +46,17 @@ Take Down
 ---------
 	$ NODES=2 vagrant destroy
 
+________________________________________________________________________________
+How it works:
+---------------------
+The daemon places 3 scripts in the mom_priv folder.
+
+ - prologue
+ - jobstarter
+ - epilogue
+
+All of them just feed the Docquer information about the job, so Docquer can manage the container for the job.
+
+Jobstart runs in priviledged mode. It executes a `docker exec` to run the job.  
 
 Vagrant setup is built upon crcollins/torquecluster
