@@ -1,4 +1,4 @@
-Docquer - Homogeneous Torque
+cbatch - Containerized Torque
 ================
 A simple torque cluster running the work inside a docker container. Comes with a Vagrant cluster if you want to test it.
 
@@ -16,8 +16,8 @@ Download
 --------
 You can download and compile the project with:
 
-	$ go get github.com/dizk/docquer
-	$ cd $GOPATH/src/github.com/dizk/docquer
+	$ go get bitbucket.org/dizk/cbatch
+	$ cd $GOPATH/src/bitbucket.org/dizk/cbatch
 	$ go build
 
 After building you can run it on a torque cluster provided by vagrant.
