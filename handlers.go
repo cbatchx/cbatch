@@ -1,13 +1,24 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	"bitbucket.org/dizk/cbatch/types"
 )
 
 func newHandler(js *JobStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		var nj types.NewJob
+		d := json.NewDecoder(r.Body)
+		err := d.Decode(&nj)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		j, err := DecodeJob(r.Body)
 		if err != nil {
 			log.Fatal(err)

@@ -2,18 +2,22 @@ package main
 
 import (
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 )
 
+const socketpath = "/var/run/cbatch.sock"
+
 func cleanUp() {
 	log.Println("Got signal cleaning up!")
-	RemoveReporters()
+	os.Remove(socketpath)
+	// RemoveReporters()
 }
 
 func main() {
-	PlaceReporters()
+	// PlaceReporters()
 
 	sigchan := make(chan os.Signal, 1)
 	signal.Notify(sigchan, os.Interrupt, os.Kill)
@@ -28,5 +32,12 @@ func main() {
 	http.HandleFunc("/new", newHandler(js))
 	http.HandleFunc("/exec", execHandler(js))
 	http.HandleFunc("/done", doneHandler(js))
-	http.ListenAndServe(":8080", nil)
+
+	// Clean old socket
+	os.Remove(socketpath)
+	l, err := net.Listen("unix", "/var/run/cbatch.sock")
+	if err != nil {
+		log.Fatal(err)
+	}
+	http.Serve(l, nil)
 }

@@ -65,7 +65,7 @@ func (j *Job) setUser() error {
 	return nil
 }
 
-// CreateImage creates a image for basic running of the image
+// CreateImage creates a image for basic running of the job
 func (j *Job) CreateImage() error {
 
 	groupadd := fmt.Sprintf("groupadd -f -g %v %v", j.User.Gid, j.Group)

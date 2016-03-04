@@ -33,7 +33,7 @@ The following command builds a three part virtual Torque cluster with 1 master h
 Access
 ------
 	$ vagrant ssh master
-	$ echo 'echo "Hello Docquer"' | qsub
+	$ echo 'echo "Hello Docker"' | qsub
 
 You can also ssh into `slave1`, `slave2` etc. to look at the logs.  
 
@@ -55,7 +55,7 @@ The daemon places 3 scripts in the mom_priv folder.
  - jobstarter
  - epilogue
 
-All of them just feed the Docquer information about the job, so Docquer can manage the container for the job.
+All of them just feed the cbatch information about the job, so cbatch can manage the container for the job.
 
 Jobstart runs in priviledged mode. It executes a `docker exec` to run the job.  
 
