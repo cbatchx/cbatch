@@ -57,12 +57,7 @@ func (d *DockerDriver) Run(j *Job) error {
 		return err
 	}
 
-	// Since StdinOnce is set the cotainer will stop automatically
-	// err = client.StopContainer(d.container.ID, 0)
-	// if err != nil {
-	// 	return err
-	// }
-	// fmt.Println("Stopped container")
+	// Since StdinOnce is set the container will stop automatically
 
 	err = client.RemoveContainer(docker.RemoveContainerOptions{
 		ID:            d.container.ID,

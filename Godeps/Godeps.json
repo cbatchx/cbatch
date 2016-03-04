@@ -1,6 +1,6 @@
 {
-	"ImportPath": "github.com/dizk/docquer",
-	"GoVersion": "go1.5",
+	"ImportPath": "bitbucket.org/dizk/cbatch",
+	"GoVersion": "go1.6",
 	"Deps": [
 		{
 			"ImportPath": "github.com/fsouza/go-dockerclient",

@@ -1,43 +1,62 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net"
-	"net/http"
-	"os"
-	"os/signal"
 )
 
-const socketpath = "/var/run/cbatch.sock"
+const cbatchheader = `
+  ________      ________      ________      _________    ________      ___  ___
+ |\   ____\    |\   __  \    |\   __  \    |\___   ___\ |\   ____\    |\  \|\  \
+ \ \  \___|    \ \  \|\ /_   \ \  \|\  \   \|___ \  \_| \ \  \___|    \ \  \\\  \
+  \ \  \        \ \   __  \   \ \   __  \       \ \  \   \ \  \        \ \   __  \
+   \ \  \____    \ \  \|\  \   \ \  \ \  \       \ \  \   \ \  \____    \ \  \ \  \
+    \ \_______\   \ \_______\   \ \__\ \__\       \ \__\   \ \_______\   \ \__\ \__\
+     \|_______|    \|_______|    \|__|\|__|        \|__|    \|_______|    \|__|\|__|
 
-func cleanUp() {
-	log.Println("Got signal cleaning up!")
-	os.Remove(socketpath)
-	// RemoveReporters()
-}
+Contain all the jobs!
+`
+const newjobheader = `
+-----------------------------------------------------------------------------------
+| Job:                                                                            |
+-----------------------------------------------------------------------------------
+`
+
+const userheader = `
+-----------------------------------------------------------------------------------
+| User:                                                                           |
+-----------------------------------------------------------------------------------
+`
+
+const joboutputheader = `
+-----------------------------------------------------------------------------------
+| Job Output:                                                                     |
+-----------------------------------------------------------------------------------
+`
 
 func main() {
-	// PlaceReporters()
 
-	sigchan := make(chan os.Signal, 1)
-	signal.Notify(sigchan, os.Interrupt, os.Kill)
+	nj := getNewJobFromEnv()
+	fmt.Printf(cbatchheader)
 
-	go func() {
-		<-sigchan
-		cleanUp()
-		os.Exit(0)
-	}()
+	fmt.Printf(newjobheader)
+	fmt.Printf("%+v \n", nj)
 
-	js := NewJobStore()
-	http.HandleFunc("/new", newHandler(js))
-	http.HandleFunc("/exec", execHandler(js))
-	http.HandleFunc("/done", doneHandler(js))
-
-	// Clean old socket
-	os.Remove(socketpath)
-	l, err := net.Listen("unix", "/var/run/cbatch.sock")
+	j, err := nj.CreateJob()
 	if err != nil {
 		log.Fatal(err)
 	}
-	http.Serve(l, nil)
+
+	fmt.Printf(userheader)
+	fmt.Printf("%+v\n", j.User)
+
+	fmt.Printf(joboutputheader)
+
+	d := NewDockerDriver()
+
+	err = d.Run(j)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

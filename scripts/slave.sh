@@ -19,6 +19,8 @@ cat > /var/spool/torque/mom_priv/config <<EOF
 \$pbsserver      master
 \$logevent       255
 \$usecp *:/home  /mnt/nfs/home/
+\$job_starter /vagrant/cbatch
+\$job_starter_run_privileged true
 EOF
 
 # Start pbs-mom
