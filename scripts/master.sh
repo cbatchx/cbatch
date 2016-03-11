@@ -1,6 +1,6 @@
 #!/bin/bash
-yum -y install wget
 
+echo "Downloading torque rpms..."
 wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1/torque-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque.rpm
 wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1/torque-scheduler-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque-scheduler.rpm
 wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1/torque-server-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque-server.rpm

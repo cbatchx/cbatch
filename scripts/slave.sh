@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+echo "Downloading torque rpms..."
 wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1/torque-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque.rpm
 wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1/torque-client-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque-client.rpm
 
@@ -28,7 +30,3 @@ sleep 2
 systemctl enable pbs_mom
 systemctl stop pbs_mom
 systemctl start pbs_mom
-
-# Start docquer
-cp /vagrant/scripts/docquer.service /lib/systemd/system/
-# systemctl start docquer
