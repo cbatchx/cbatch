@@ -9,8 +9,8 @@ Build Requirements
 - Go [https://golang.org/](https://golang.org/)
 - Glide [https://github.com/Masterminds/glide](https://github.com/Masterminds/glide)
 
-Download
---------
+Build
+------
 You can download and compile the project with:
 
 	$ go get bitbucket.org/dizk/cbatch
