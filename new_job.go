@@ -9,9 +9,6 @@ import (
 	"strings"
 )
 
-// TODO move to config
-const momPriv = "/var/spool/torque/mom_priv/jobs/"
-
 // NewJob represents a new job
 type NewJob struct {
 	PBSJob PBSJob
@@ -119,7 +116,7 @@ func (n *NewJob) GetImage() (*Image, error) {
 func (n *NewJob) addMounts(m Mounts) (Mounts, error) {
 	// Not interactive job.
 	if n.PBSJob.Environment != "PBS_INTERACTIVE" {
-		s := fmt.Sprintf("%v%v.SC", momPriv, n.PBSJob.JobID)
+		s := fmt.Sprintf("%v%v.SC", config.GetMOMPriv(), n.PBSJob.JobID)
 		m = m.AddMount(s, s, false) // Read only
 	}
 

@@ -5,12 +5,11 @@ A simple torque cluster running the work inside a docker container. Comes with a
 And a daemon implemented in Go which manages the containers. The daemon must run on each of the Torque MOM nodes.
 
 ________________________________________________________________________________
-Build/Run Requirements
+Build Requirements
 ----------------------
 
-- Vagrant
-- Virtualbox
-- Go
+- Go [https://golang.org/](https://golang.org/)
+- Glide [https://github.com/Masterminds/glide](https://github.com/Masterminds/glide)
 
 Download
 --------
@@ -18,9 +17,30 @@ You can download and compile the project with:
 
 	$ go get bitbucket.org/dizk/cbatch
 	$ cd $GOPATH/src/bitbucket.org/dizk/cbatch
+    $ glide install
 	$ go build
 
 After building you can run it on a torque cluster provided by vagrant.
+
+Install
+-------
+Move `config.toml` to `/etc/cbatch.toml` and edit to fit your system.
+
+    $ sudo cp config.toml /etc/cbatch.toml
+
+Move `cbatch` to some bin folder.
+
+    $ sudo cp cbatch /usr/bin/cbatch
+
+Add `$jobstarter` option to your Torque mom config.
+
+    $ echo '$job_starter /usr/bin/cbatch' >> /var/spool/torque/mom_priv/config
+    $ echo '$job_starter_run_privileged true' >> /var/spool/torque/mom_priv/config
+
+
+Development Requirements
+-------------------------
+- Vagrant [https://www.vagrantup.com/](https://www.vagrantup.com/)
 
 Run
 -----
@@ -46,17 +66,5 @@ Take Down
 ---------
 	$ NODES=2 vagrant destroy
 
-________________________________________________________________________________
-How it works:
----------------------
-The daemon places 3 scripts in the mom_priv folder.
-
- - prologue
- - jobstarter
- - epilogue
-
-All of them just feed the cbatch information about the job, so cbatch can manage the container for the job.
-
-Jobstart runs in priviledged mode. It executes a `docker exec` to run the job.  
 
 Vagrant setup is built upon crcollins/torquecluster

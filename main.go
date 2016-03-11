@@ -34,7 +34,15 @@ const joboutputheader = `
 -----------------------------------------------------------------------------------
 `
 
+var config Config
+
 func main() {
+
+	// Reads the config
+	err := ReadConfig(&config)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	nj := getNewJobFromEnv()
 	fmt.Printf(cbatchheader)
