@@ -36,7 +36,7 @@ qterm
 
 # Build up the nodes file
 : > /var/spool/torque/server_priv/nodes
-for i in `seq 1 $1`; do echo  "slave$i np=1" >> /var/spool/torque/server_priv/nodes; done
+for i in `seq 1 $1`; do echo  "slave$i np=5" >> /var/spool/torque/server_priv/nodes; done
 
 # Set server_name to HOSTNAME
 echo $HOSTNAME > /var/spool/torque/server_name
