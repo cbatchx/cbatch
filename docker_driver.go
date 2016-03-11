@@ -1,6 +1,10 @@
 package main
 
-import "github.com/fsouza/go-dockerclient"
+import (
+	"io/ioutil"
+
+	"github.com/fsouza/go-dockerclient"
+)
 
 // DockerDriver driver for runnig job in Docker.
 type DockerDriver struct {
@@ -19,14 +23,21 @@ func (d *DockerDriver) Run(j *Job) error {
 		return err
 	}
 
-	// Pull image
-	// err = client.PullImage(docker.PullImageOptions{
-	// 	Repository:   j.Image.ImageName,
-	// 	OutputStream: ioutil.Discard,
-	// }, docker.AuthConfiguration{})
-	// if err != nil {
-	// 	return err
-	// }
+	hasImage, err := imageExists(j)
+	if err != nil {
+		return err
+	}
+
+	if !hasImage {
+		// Pull image
+		err = client.PullImage(docker.PullImageOptions{
+			Repository:   j.Image.ImageName,
+			OutputStream: ioutil.Discard,
+		}, docker.AuthConfiguration{})
+		if err != nil {
+			return err
+		}
+	}
 
 	d.container, err = client.CreateContainer(docker.CreateContainerOptions{
 		Config:     getDefaultContainerConfig(j),
@@ -90,4 +101,26 @@ func getDefaultHostConfig(j *Job) *docker.HostConfig {
 		binds = append(binds, m.DockerBindString())
 	}
 	return &docker.HostConfig{Binds: binds}
+}
+
+func imageExists(j *Job) (bool, error) {
+	client, err := docker.NewClientFromEnv()
+	if err != nil {
+		return false, err
+	}
+
+	images, err := client.ListImages(docker.ListImagesOptions{Filter: j.Image.ImageName})
+	if err != nil {
+		return false, err
+	}
+
+	for _, image := range images {
+		for _, tag := range image.RepoTags {
+			if tag == j.Image.ImageName {
+				return true, nil
+			}
+		}
+	}
+
+	return false, nil
 }
