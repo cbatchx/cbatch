@@ -1,8 +1,6 @@
 cbatch - Containerized Torque
 ================
-A simple torque cluster running the work inside a docker container. Comes with a Vagrant cluster if you want to test it.
-
-And a daemon implemented in Go which manages the containers. The daemon must run on each of the Torque MOM nodes.
+Run your batch jobs in containers, created dynamically at run time. Without changes to your jobs.
 
 ________________________________________________________________________________
 Build Requirements
