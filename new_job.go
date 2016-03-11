@@ -107,8 +107,8 @@ func (n *NewJob) GetShell() (*Shell, error) {
 // GetImage returns a new Image.
 func (n *NewJob) GetImage() (*Image, error) {
 	return &Image{
-		ImageName:   "centos:latest",
-		ImageSource: "",
+		ImageName:   config.GetImageName(),
+		ImageSource: config.GetImageSource(),
 	}, nil
 }
 

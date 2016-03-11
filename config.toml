@@ -1,1 +1,5 @@
-mom_priv = "/var/spool/torque/mom_priv/jobs/"
+[torque]
+    mom_priv = "/var/spool/torque/mom_priv/jobs/"
+
+[image]
+    name = "centos:latest"
