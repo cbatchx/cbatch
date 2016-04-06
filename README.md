@@ -22,7 +22,7 @@ After building you can run it on a torque cluster provided by vagrant.
 
 Install
 -------
-Move `config.toml` to `/etc/cbatch.toml` and edit to fit your system.
+Move `config/config.toml` to `/etc/cbatch.toml` and edit to fit your system.
 
     $ sudo cp config.toml /etc/cbatch.toml
 
