@@ -42,13 +42,25 @@ func (n *NewJob) CreateJob() (*Job, error) {
 		return nil, err
 	}
 
+	e, err := n.GetEnv()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Job{
 		User:   u,
 		Cmd:    n.Args,
 		Shell:  s,
 		Image:  i,
 		Mounts: m,
+		Env:    e,
 	}, nil
+}
+
+// GetEnv get the current Environment
+func (n *NewJob) GetEnv() ([]string, error) {
+	e := os.Environ()
+	return e, nil
 }
 
 // GetUser returns the User who submitted this job.

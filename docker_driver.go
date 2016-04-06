@@ -90,6 +90,7 @@ func getDefaultContainerConfig(j *Job) *docker.Config {
 		Tty:          j.Shell.TTY,
 		OpenStdin:    true,
 		StdinOnce:    true,
+		Env:          j.Env,
 		Image:        j.Image.ImageName,
 		Cmd:          j.Cmd,
 	}
