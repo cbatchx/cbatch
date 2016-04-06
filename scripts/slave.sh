@@ -17,6 +17,9 @@ systemctl start nfs-server
 mount -t nfs 192.168.1.100:/home /mnt/nfs/home/
 echo "192.168.1.100:/home    /mnt/nfs/home   nfs defaults 0 0" >> /etc/fstab
 
+# Configure torque MOM.
+# Note that job_starter is poiting at /vagrant/cbatch. This is for
+# development purposes.
 cat > /var/spool/torque/mom_priv/config <<EOF
 \$pbsserver      master
 \$logevent       255
@@ -30,3 +33,6 @@ sleep 2
 systemctl enable pbs_mom
 systemctl stop pbs_mom
 systemctl start pbs_mom
+
+# Copy in cbatch config
+cp /vagrant/config/config.toml /etc/cbatch.toml

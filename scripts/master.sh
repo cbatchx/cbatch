@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Installing Influxdb
+cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
+[influxdb]
+name = InfluxDB Repository - RHEL \$releasever
+baseurl = https://repos.influxdata.com/rhel/\$releasever/\$basearch/stable
+enabled = 1
+gpgcheck = 1
+gpgkey = https://repos.influxdata.com/influxdb.key
+EOF
+
+sudo yum -y install influxdb
+
 echo "Downloading torque rpms..."
 wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1/torque-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque.rpm
 wget https://github.com/dizk/torquebuilder/releases/download/v6.0.0.1/torque-scheduler-6.0.0.1-1.adaptive.el7.centos.x86_64.rpm -qO torque-scheduler.rpm
@@ -10,13 +22,6 @@ rpm -i torque.rpm torque-server.rpm torque-scheduler.rpm torque-client.rpm
 rm torque*.rpm
 
 mkdir -p /var/spool/torque/checkpoint/
-
-# Fixing stuff...
-# dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024
-# chmod 400 /etc/munge/munge.key
-# chown munge:munge /etc/munge/munge.key
-# systemctl enable munge.service
-# systemctl start munge.service
 
 systemctl enable trqauthd
 systemctl start trqauthd
@@ -56,3 +61,13 @@ systemctl start nfs-server
 # This is only a test setup, this is not secure
 echo "/home *(rw,sync,no_root_squash,no_all_squash)" > /etc/exports
 systemctl restart nfs-server
+
+# Start influxdb
+systemctl start  influxdb.service
+
+# Wait for influxdb
+sleep 3
+
+# Insert a test user
+influx -execute "create user test with password 'test'"
+influx -execute "grant all privileges to test"

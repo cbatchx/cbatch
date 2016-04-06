@@ -1,5 +1,5 @@
-hash: 8a761191303fd9462ae975105e092f743fec4e6cb0eda6e31f59141c31a38a7e
-updated: 2016-03-11T12:59:36.973206744+01:00
+hash: 43e955fae0f9684362c85536bd4cf08285e62cbcd0cb3fec140e164f1d6bd37d
+updated: 2016-04-06T20:38:14.005745493+02:00
 imports:
 - name: github.com/BurntSushi/toml
   version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
@@ -23,4 +23,8 @@ imports:
   - external/golang.org/x/sys/unix
   - external/golang.org/x/net/context
   - external/github.com/docker/go-units
+- name: github.com/influxdata/influxdb
+  version: a58430bb60fc4c112121fdf484c29dad67aad11f
+  subpackages:
+  - client/v2
 devImports: []
