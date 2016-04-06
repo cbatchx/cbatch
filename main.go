@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/influxdata/influxdb/client/v2"
 )
@@ -57,8 +56,6 @@ func main() {
 
 	fmt.Printf(newjobheader)
 	fmt.Printf("%+v \n", nj)
-
-	fmt.Printf("%+v", os.Environ())
 
 	j, err := nj.CreateJob()
 	if err != nil {
