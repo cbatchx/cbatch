@@ -48,6 +48,11 @@ func (c *Config) GetMOMPriv() string {
 	return c.Torque.MOMPriv
 }
 
+// GetJobDir get the folder where jobs are located. Usually mom_priv/jobs
+func (c *Config) GetJobDir() string {
+	return c.Torque.MOMPriv + "jobs/"
+}
+
 // GetImageName get the name of the image to run.
 func (c *Config) GetImageName() string {
 	return c.Image.Name

@@ -116,7 +116,7 @@ func (n *NewJob) GetImage() (*Image, error) {
 func (n *NewJob) addMounts(m Mounts) (Mounts, error) {
 	// Not interactive job.
 	if n.PBSJob.Environment != "PBS_INTERACTIVE" {
-		s := fmt.Sprintf("%v%v.SC", config.GetMOMPriv(), n.PBSJob.JobID)
+		s := fmt.Sprintf("%v%v.SC", config.GetJobDir(), n.PBSJob.JobID)
 		m = m.AddMount(s, s, false) // Read only
 	}
 
