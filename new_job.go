@@ -93,10 +93,7 @@ func (n *NewJob) GetUser() (*User, error) {
 	}, nil
 }
 
-// GetShell returns the shell and optinally an error
-// It also returns an stdin io.Reader, enabling to read the commands piped to the final shell.
-// It creates a tee reader so the Stdin is still passed to the driver.
-// If the job is interactive the tee reader will not be set.
+// GetShell returns the shell to use in the container.
 func (n *NewJob) GetShell() (*Shell, error) {
 	// If we are in interactive mode, don't tee.
 	if n.PBSJob.Environment == "PBS_INTERACTIVE" {
@@ -134,11 +131,6 @@ func (n *NewJob) addMounts(m Mounts) (Mounts, error) {
 
 	// Mount home
 	m = m.AddMount(n.PBSJob.Origin.Home, n.PBSJob.Origin.Home, true) // RW
-
-	// Mount /etc/passwd and /etc/group
-	// To allow for other users to read
-	m = m.AddMount("/etc/passwd", "/etc/passwd", false) // RO
-	m = m.AddMount("/etc/group", "/etc/group", false)   // RO
 
 	fmt.Println(m)
 

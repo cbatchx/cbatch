@@ -2,6 +2,8 @@ package main
 
 import "os"
 
+// This file parses all environment variables coming from PBS.
+
 // PBSJob Represents a PBS job. This is just all known Environment variables.
 type PBSJob struct {
 	Version     string // PBS_VERSION

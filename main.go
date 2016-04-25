@@ -67,7 +67,15 @@ func main() {
 
 	fmt.Printf(joboutputheader)
 
-	d := NewDockerDriver()
+	d, err := NewDockerDriver()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = d.Prepare(j)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	err = d.Run(j)
 	if err != nil {
