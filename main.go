@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+
+	"github.com/influxdata/influxdb/client/v2"
 )
 
 const cbatchheader = `
@@ -36,6 +38,8 @@ const joboutputheader = `
 
 var config Config
 
+var influxClient client.Client
+
 func main() {
 
 	// Reads the config
@@ -43,6 +47,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Connects to influxdb if it is present in the config
+	connectToInflux()
 
 	nj := getNewJobFromEnv()
 	fmt.Printf(cbatchheader)
@@ -67,4 +74,20 @@ func main() {
 		log.Fatal(err)
 	}
 
+}
+
+func connectToInflux() {
+	if config.InfluxAvailable() {
+		c, err := client.NewHTTPClient(client.HTTPConfig{
+			Addr:     config.GetInfluxHost(),
+			Username: config.GetInfluxUser(),
+			Password: config.GetInfluxPassword(),
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		influxClient = c
+	}
 }

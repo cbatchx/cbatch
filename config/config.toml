@@ -1,5 +1,38 @@
+# This section informs cbatch of necessary information in order to
+# get the jobs from the torque_mom.
 [torque]
-    mom_priv = "/var/spool/torque/mom_priv/jobs/"
+    # Where the mom_priv folder is located.
+    # The usual location is:
+    # /var/spool/torque/mom_priv/
+    #
+    # PS: Has to include slash at the end.
+    mom_priv = "/var/spool/torque/mom_priv/"
 
+# This section informs cbatch about the image to use.
 [image]
+    # The name of the image to use.
+    #
+    # Could be "centos:latest" if using Docker.
+    # The docker driver will pull images from Docker Hub automatically.
     name = "centos:latest"
+
+# This section describes a influxdb instance. cbatch will write data
+# points to influxdb if configured.
+#
+# The data written is:
+# New job arrived
+# Job finished
+# Job duration
+#
+# This section can be omitted.
+[influx]
+    # Hostname of the influxdb instance.
+    #
+    # cbatch only supports the http interface.
+    host = "http://192.168.1.100:8086"
+    # User to access influxdb, must have access to create
+    # the cbatch database. Also requires write access to the cbatch
+    # database.
+    user = "test"
+    # Password for the influxdb user.
+    password = "test"

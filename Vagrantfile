@@ -10,6 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     master.vm.box = "bento/centos-7.2"
     master.vm.network :private_network, ip: "192.168.1.100"
     master.vm.hostname = "master"
+    master.vm.network "forwarded_port", guest: 8086, host: 8086
 
     master.vm.provision :shell, :path => "scripts/hosts.sh", :args => "'%d'" % numNodes
     master.vm.provision :shell, :path => "scripts/master.sh", :args => "'%d'" % numNodes
