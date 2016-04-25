@@ -60,7 +60,7 @@ func (c *Config) GetImageName() string {
 
 // GetImageSource get the server to download the image from.
 func (c *Config) GetImageSource() string {
-	return ""
+	return c.Image.Source
 }
 
 // InfluxAvailable check if influxdb is configured.

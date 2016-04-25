@@ -115,9 +115,27 @@ func (n *NewJob) GetShell() (*Shell, error) {
 
 // GetImage returns a new Image.
 func (n *NewJob) GetImage() (*Image, error) {
+
+	if config.GetImageName() == "" && config.GetImageSource() == "" {
+		return nil, fmt.Errorf("No image specifed.")
+	}
+
+	if config.GetImageName() != "" && config.GetImageSource() != "" {
+		return nil, fmt.Errorf("Can not get image based on name and source.")
+	}
+
+	if config.GetImageName() != "" {
+		return &Image{
+			ImageName:   config.GetImageName(),
+			ImageSource: config.GetImageSource(),
+			Source:      false,
+		}, nil
+	}
+
 	return &Image{
 		ImageName:   config.GetImageName(),
 		ImageSource: config.GetImageSource(),
+		Source:      true,
 	}, nil
 }
 

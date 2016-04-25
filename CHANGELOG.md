@@ -1,3 +1,8 @@
+0.0.4 - 25.04.2016 
+### Added
+    - Can import from source http
+    - Rewrote how users are inserted, now commits a new container to do it.
+
 0.0.3 - 06.04.2016
 ### Added
     - Takes a snapshot of the environment and copies them to the container.
