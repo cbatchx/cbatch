@@ -7,6 +7,10 @@ import (
 
 	"net/url"
 
+	"log"
+
+	"os"
+
 	"github.com/fsouza/go-dockerclient"
 )
 
@@ -40,15 +44,42 @@ func (d *DockerDriver) Prepare(j *Job) error {
 	groupAdd := fmt.Sprintf("groupadd -g %v %v", j.User.GID, j.User.Groupname)
 	addUser := fmt.Sprintf("adduser -d %v -u %v -g %v %v", j.User.HomeDir, j.User.UID, j.User.GID, j.User.Username)
 
+	content := []byte("#!/bin/bash\n" + groupAdd + "\n" + addUser)
+	tmpfile, err := ioutil.TempFile("", "cbatch_prepare")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	if _, err := tmpfile.Write(content); err != nil {
+		log.Fatal(err)
+	}
+	if err := tmpfile.Close(); err != nil {
+		log.Fatal(err)
+	}
+
 	cmd := []string{
 		"/bin/bash",
-		"-c",
-		groupAdd + " && " + addUser,
+		"/prepare.sh",
+	}
+
+	// Prepend the init command
+	if j.Image.InitCmd != "" {
+		cmd = append([]string{j.Image.InitCmd}, cmd...)
+	}
+
+	log.Println(cmd)
+
+	m := Mount{
+		Source:      tmpfile.Name(),
+		Destination: "/prepare.sh",
+		RW:          true,
 	}
 
 	d.container, err = d.client.CreateContainer(docker.CreateContainerOptions{
 		Config:     getPrepareContainerConfig(imageName, cmd),
-		HostConfig: &docker.HostConfig{},
+		HostConfig: getPrepareHostConfig(j, m),
 	})
 	if err != nil {
 		return err
@@ -77,7 +108,7 @@ func (d *DockerDriver) Prepare(j *Job) error {
 	// Prepare the run container.
 	d.container, err = d.client.CreateContainer(docker.CreateContainerOptions{
 		Config:     getRunContainerConfig(j, image),
-		HostConfig: getRunHostConfig(j),
+		HostConfig: getHostConfig(j),
 	})
 	if err != nil {
 		return err
@@ -134,7 +165,7 @@ func (d *DockerDriver) importImage(imageSource string) (string, error) {
 	u, err := url.Parse(imageSource)
 	imageName := u.Path[1:]
 
-	hasImage, err := d.imageExists(imageName)
+	hasImage, err := d.imageExists(imageName + ":latest")
 	if err != nil {
 		return "", err
 	}
@@ -183,7 +214,7 @@ func (d *DockerDriver) waitContainer() error {
 	}
 
 	if exitCode != 0 {
-		err := fmt.Errorf("Prepare images exited with non-zero exit code: %v", exitCode)
+		err := fmt.Errorf("Image preparation exited with non-zero exit code: %v", exitCode)
 		return err
 	}
 
@@ -211,6 +242,16 @@ func getPrepareContainerConfig(imageName string, cmd []string) *docker.Config {
 	}
 }
 
+func getPrepareHostConfig(j *Job, m Mount) *docker.HostConfig {
+	var binds []string
+	binds = append(binds, m.DockerBindString())
+
+	return &docker.HostConfig{
+		Binds:      binds,
+		Privileged: j.Image.Privileged,
+	}
+}
+
 func getRunContainerConfig(j *Job, i *docker.Image) *docker.Config {
 	return &docker.Config{
 		User:         j.User.Username,
@@ -226,17 +267,20 @@ func getRunContainerConfig(j *Job, i *docker.Image) *docker.Config {
 	}
 }
 
-func getRunHostConfig(j *Job) *docker.HostConfig {
+func getHostConfig(j *Job) *docker.HostConfig {
 	var binds []string
 	for _, m := range j.Mounts {
 		binds = append(binds, m.DockerBindString())
 	}
-	return &docker.HostConfig{Binds: binds}
+	return &docker.HostConfig{
+		Binds:      binds,
+		Privileged: j.Image.Privileged,
+	}
 }
 
 func (d *DockerDriver) imageExists(i string) (bool, error) {
 
-	images, err := d.client.ListImages(docker.ListImagesOptions{Filter: i})
+	images, err := d.client.ListImages(docker.ListImagesOptions{})
 	if err != nil {
 		return false, err
 	}
@@ -244,6 +288,7 @@ func (d *DockerDriver) imageExists(i string) (bool, error) {
 	for _, image := range images {
 		for _, tag := range image.RepoTags {
 			if tag == i {
+				log.Println(tag)
 				return true, nil
 			}
 		}

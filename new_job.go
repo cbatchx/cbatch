@@ -46,10 +46,15 @@ func (n *NewJob) CreateJob() (*Job, error) {
 	if err != nil {
 		return nil, err
 	}
+	
+	cmd := n.Args
+	if i.InitCmd != "" {
+		cmd = append([]string{i.InitCmd}, cmd...)
+	}
 
 	return &Job{
 		User:   u,
-		Cmd:    n.Args,
+		Cmd:    cmd,
 		Shell:  s,
 		Image:  i,
 		Mounts: m,
@@ -136,6 +141,8 @@ func (n *NewJob) GetImage() (*Image, error) {
 		ImageName:   config.GetImageName(),
 		ImageSource: config.GetImageSource(),
 		Source:      true,
+		Privileged:  config.GetImagePrivileged(),
+		InitCmd:     config.GetImageInit(),
 	}, nil
 }
 

@@ -10,4 +10,8 @@ type Image struct {
 	ImageSource string
 	// Source or Name?
 	Source bool
+	// Privileged
+	Privileged bool
+	// Init command is a command to run to prepare the image.
+	InitCmd string
 }

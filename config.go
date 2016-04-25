@@ -14,8 +14,10 @@ type torqueConfig struct {
 }
 
 type imageConfig struct {
-	Name   string
-	Source string
+	Name       string
+	Source     string
+	Privileged bool
+	Init       string
 }
 
 type influxConfig struct {
@@ -61,6 +63,16 @@ func (c *Config) GetImageName() string {
 // GetImageSource get the server to download the image from.
 func (c *Config) GetImageSource() string {
 	return c.Image.Source
+}
+
+// GetImagePrivileged whetever to run image as Privileged or not.
+func (c *Config) GetImagePrivileged() bool {
+	return c.Image.Privileged
+}
+
+// GetImageInit get special command to run before running the job.
+func (c *Config) GetImageInit() string {
+	return c.Image.Init
 }
 
 // InfluxAvailable check if influxdb is configured.
