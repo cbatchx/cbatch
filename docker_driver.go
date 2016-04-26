@@ -110,11 +110,8 @@ func (d *DockerDriver) Prepare(j *Job) error {
 		Config:     getRunContainerConfig(j, image),
 		HostConfig: getHostConfig(j),
 	})
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }
 
 // Run implementation of the driver interface.
@@ -142,11 +139,8 @@ func (d *DockerDriver) Run(j *Job) error {
 	}
 
 	err = d.removeContainer()
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }
 
 func (d *DockerDriver) getImage(j *Job) (string, error) {
@@ -163,6 +157,9 @@ func (d *DockerDriver) importImage(imageSource string) (string, error) {
 
 	// Use path as image name
 	u, err := url.Parse(imageSource)
+	if err != nil {
+		return "", err
+	}
 	imageName := u.Path[1:]
 
 	hasImage, err := d.imageExists(imageName + ":latest")

@@ -46,15 +46,10 @@ func (n *NewJob) CreateJob() (*Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	
-	cmd := n.Args
-	if i.InitCmd != "" {
-		cmd = append([]string{i.InitCmd}, cmd...)
-	}
 
 	return &Job{
 		User:   u,
-		Cmd:    cmd,
+		Cmd:    n.Args,
 		Shell:  s,
 		Image:  i,
 		Mounts: m,
