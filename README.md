@@ -14,8 +14,8 @@ Build
 ------
 You can download and compile the project with:
 
-	$ go get bitbucket.org/dizk/cbatch
-	$ cd $GOPATH/src/bitbucket.org/dizk/cbatch
+	$ go get github.com/cbatchx/cbatch
+	$ cd $GOPATH/src/github.com/cbatchx/cbatch
     $ glide install
 	$ go build
 
