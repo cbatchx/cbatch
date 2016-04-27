@@ -1,9 +1,7 @@
-package: bitbucket.org/dizk/cbatch
+package: github.com/cbatchx/cbatch
 import:
 - package: github.com/BurntSushi/toml
-  version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
 - package: github.com/fsouza/go-dockerclient
-  version: 0099401a7342ad77e71ca9f9a57c5e72fb80f6b2
 - package: github.com/influxdata/influxdb
   subpackages:
   - client/v2
