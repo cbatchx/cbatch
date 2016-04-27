@@ -1,4 +1,4 @@
-.vagrant/*
+.vagrant
 cbatch
 chronograf.db
-vendor/*
+vendor
