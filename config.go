@@ -18,6 +18,7 @@ type imageConfig struct {
 	Source     string
 	Privileged bool
 	Init       string
+	Cvmfs      string
 }
 
 type influxConfig struct {
@@ -74,6 +75,12 @@ func (c *Config) GetImagePrivileged() bool {
 func (c *Config) GetImageInit() string {
 	return c.Image.Init
 }
+
+// GetCvmfs get the path of Cvmfs
+func (c *Config) GetCvmfs() string {
+	return c.Image.Cvmfs
+}
+
 
 // InfluxAvailable check if influxdb is configured.
 func (c *Config) InfluxAvailable() bool {

@@ -36,3 +36,44 @@ systemctl start pbs_mom
 
 # Copy in cbatch config
 cp /vagrant/config/config.toml /etc/cbatch.toml
+
+
+# Turn off MountFlags=slave
+cat > /lib/systemd/system/docker.service <<EOF
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+After=network.target docker.socket
+Requires=docker.socket
+
+[Service]
+Type=notify
+# the default is not to use systemd for cgroups because the delegate issues still
+# exists and systemd currently does not support the cgroup feature set required
+# for containers run by docker
+ExecStart=/usr/bin/docker daemon -H fd://
+# MountFlags=slave
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+TimeoutStartSec=0
+# set delegate yes so that systemd does not reset the cgroups of docker containers
+Delegate=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Run docker with the new config
+systemctl daemon-reload
+systemctl restart docker
+
+
+# Install cvmfs-base image to mount cvmfs
+mkdir /cvmfs
+docker run -d \
+    --privileged \
+    -v /cvmfs:/cvmfs:rshared \
+    -e CVMFS_REPOSITORIES=cernvm-prod.cern.ch \
+    -e CVMFS_HTTP_PROXY="DIRECT" \
+     cbatchx/cvmfs-base

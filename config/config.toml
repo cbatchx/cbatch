@@ -20,13 +20,16 @@
     source = "http://cernvm.cern.ch/releases/testing/cvm-docker.2.4-6.cernvm.x86_64.tar"
     #
     # Some images requires to run in privileged mode. Use with caution the container basicly have full root access to your system.
-    privileged = true
+    # privileged = true
     #
     # An init command can also be specified to run some setup of the image before use.
     # MUST be able to accept a command to run as its argument(s).
     # Ex.: /init echo Hello && echo tolo
-    entry = "/init"
-
+    init = "/init"
+    #
+    # If you supply cvmfs a path to cvmfs it will mount it at /cvmfs in all containers
+    cvmfs = "/cvmfs"
+    
 # This section describes a influxdb instance. cbatch will write data
 # points to influxdb if configured.
 #

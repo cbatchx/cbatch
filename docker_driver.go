@@ -41,6 +41,8 @@ func (d *DockerDriver) Prepare(j *Job) error {
 		return err
 	}
 
+	// TODO clean up this
+
 	groupAdd := fmt.Sprintf("groupadd -g %v %v", j.User.GID, j.User.Groupname)
 	addUser := fmt.Sprintf("adduser -d %v -u %v -g %v %v", j.User.HomeDir, j.User.UID, j.User.GID, j.User.Username)
 
@@ -71,15 +73,16 @@ func (d *DockerDriver) Prepare(j *Job) error {
 
 	log.Println(cmd)
 
-	m := Mount{
-		Source:      tmpfile.Name(),
-		Destination: "/prepare.sh",
-		RW:          true,
-	}
+	var mounts Mounts
+
+	mounts = mounts.AddMount(tmpfile.Name(), "/prepare.sh", true)
+
+	// Fix this
+	mounts = mounts.AddMount("/cvmfs", "/cvmfs", false)
 
 	d.container, err = d.client.CreateContainer(docker.CreateContainerOptions{
 		Config:     getPrepareContainerConfig(imageName, cmd),
-		HostConfig: getPrepareHostConfig(j, m),
+		HostConfig: getPrepareHostConfig(j, mounts),
 	})
 	if err != nil {
 		return err
@@ -89,6 +92,24 @@ func (d *DockerDriver) Prepare(j *Job) error {
 	if err != nil {
 		return err
 	}
+
+	// TODO only if debug mode.
+
+	// err = d.client.AttachToContainer(docker.AttachToContainerOptions{
+	// 	Container:    d.container.ID,
+	// 	InputStream:  j.Shell.Stdin,
+	// 	OutputStream: j.Shell.Stdout,
+	// 	ErrorStream:  j.Shell.Stderr,
+	// 	Logs:         true,
+	// 	Stream:       true,
+	// 	Stdin:        true,
+	// 	Stdout:       true,
+	// 	Stderr:       true,
+	// 	RawTerminal:  j.Shell.TTY, // Use raw terminal with tty https://godoc.org/github.com/fsouza/go-dockerclient#AttachToContainerOptions
+	// })
+	// if err != nil {
+	// 	return err
+	// }
 
 	err = d.waitContainer()
 	if err != nil {
@@ -239,12 +260,9 @@ func getPrepareContainerConfig(imageName string, cmd []string) *docker.Config {
 	}
 }
 
-func getPrepareHostConfig(j *Job, m Mount) *docker.HostConfig {
-	var binds []string
-	binds = append(binds, m.DockerBindString())
-
+func getPrepareHostConfig(j *Job, m Mounts) *docker.HostConfig {
 	return &docker.HostConfig{
-		Binds:      binds,
+		Binds:      buildBindString(m),
 		Privileged: j.Image.Privileged,
 	}
 }
@@ -265,14 +283,18 @@ func getRunContainerConfig(j *Job, i *docker.Image) *docker.Config {
 }
 
 func getHostConfig(j *Job) *docker.HostConfig {
-	var binds []string
-	for _, m := range j.Mounts {
-		binds = append(binds, m.DockerBindString())
-	}
 	return &docker.HostConfig{
-		Binds:      binds,
+		Binds:      buildBindString(j.Mounts),
 		Privileged: j.Image.Privileged,
 	}
+}
+
+func buildBindString(mounts Mounts) []string {
+	var binds []string
+	for _, mount := range mounts {
+		binds = append(binds, mount.DockerBindString())
+	}
+	return binds
 }
 
 func (d *DockerDriver) imageExists(i string) (bool, error) {

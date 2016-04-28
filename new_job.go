@@ -152,6 +152,12 @@ func (n *NewJob) addMounts(m Mounts) (Mounts, error) {
 	// Mount home
 	m = m.AddMount(n.PBSJob.Origin.Home, n.PBSJob.Origin.Home, true) // RW
 
+	// Mount cvmfs if present
+	if config.GetCvmfs() != "" {
+		m = m.AddMount(config.GetCvmfs(), "/cvmfs", true)
+	}
+
+
 	fmt.Println(m)
 
 	return m, nil
