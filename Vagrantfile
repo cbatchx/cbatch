@@ -8,6 +8,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   puts numNodes
   config.vm.define :master do |master|
     master.vm.box = "bento/centos-7.2"
+    master.vm.box_version = "<= 2.2.5"
     master.vm.network :private_network, ip: "192.168.1.100"
     master.vm.hostname = "master"
     master.vm.network "forwarded_port", guest: 8086, host: 8086
@@ -21,6 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     val = num + 100
     config.vm.define nodeName do |node|
       node.vm.box = "bento/centos-7.2"
+      node.vm.box_version = "<= 2.2.5"
       node.vm.network :private_network, ip: "192.168.1." + val.to_s
       node.vm.hostname = "slave" + num.to_s
 
