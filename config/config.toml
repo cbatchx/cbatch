@@ -6,7 +6,11 @@
     # /var/spool/torque/mom_priv/
     #
     # PS: Has to include slash at the end.
-    mom_priv = "/var/spool/torque/mom_priv/"
+    #mom_priv = "/var/spool/torque/mom_priv/"
+    
+    
+    # Test dir.
+    mom_priv = "/home/diz/go/src/github.com/cbatchx/cbatch/test/"
 
 # This section informs cbatch about the image to use.
 [image]
@@ -15,21 +19,21 @@
     # Could be "centos:latest" if using Docker.
     # The docker driver will pull images from Docker Hub automatically. If name is supplied
     # name = "centos:latest"
-    name = "cbatchx/cvm:latest"
+    # name = "cbatchx/cvm:latest"
     #
     # It can also pull docker images in tar format from source.
-    # source = "http://cernvm.cern.ch/releases/testing/cvm-docker.2.4-6.cernvm.x86_64.tar"
+    source = "http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar"
     #
     # Some images requires to run in privileged mode. Use with caution the container basicly have full root access to your system.
-    # privileged = true
+    privileged = true
     #
     # An init command can also be specified to run some setup of the image before use.
     # MUST be able to accept a command to run as its argument(s).
     # Ex.: /init echo Hello && echo tolo
-    # init = "/init"
+    init = "/init"
     #
     # If you supply cvmfs a path to cvmfs it will mount it at /cvmfs in all containers
-    cvmfs = "/cvmfs"
+    # cvmfs = "/cvmfs"
     
 # This section describes a influxdb instance. cbatch will write data
 # points to influxdb if configured.
@@ -40,14 +44,14 @@
 # Job duration
 #
 # This section can be omitted.
-[influx]
+#[influx]
     # Hostname of the influxdb instance.
     #
     # cbatch only supports the http interface.
-    host = "http://192.168.1.100:8086"
+    # host = "http://192.168.1.100:8086"
     # User to access influxdb, must have access to create
     # the cbatch database. Also requires write access to the cbatch
     # database.
-    user = "test"
+    # user = "test"
     # Password for the influxdb user.
-    password = "test"
+    # password = "test"

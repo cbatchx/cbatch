@@ -1,32 +1,48 @@
-hash: 3b6e0f3186f640b9877ec9c3c437d0aea1103cf04945ba0afd1154329f99cb57
-updated: 2016-04-27T19:45:09.988243762+02:00
+hash: e585821858f4beb77b85be71c41047dd699e04fb87f95ac6c0844cb6a56b4ea0
+updated: 2016-05-26T19:28:46.215592915+02:00
 imports:
+- name: github.com/Abramovic/logrus_influxdb
+  version: f05a45b78e3a34806d6632cb2804c24811fe35fd
 - name: github.com/BurntSushi/toml
   version: f0aeabca5a127c4078abb8c8d64298b147264b55
-- name: github.com/fsouza/go-dockerclient
-  version: 1d4f4ae73768d3ca16a6fb964694f58dc5eba601
+- name: github.com/docker/docker
+  version: 8e924153e219d040e3aa672df4e0c7baff9f8d8b
   subpackages:
-  - external/github.com/docker/docker/opts
-  - external/github.com/docker/docker/pkg/archive
-  - external/github.com/docker/docker/pkg/fileutils
-  - external/github.com/docker/docker/pkg/homedir
-  - external/github.com/docker/docker/pkg/stdcopy
-  - external/github.com/docker/go-units
-  - external/github.com/hashicorp/go-cleanhttp
-  - external/github.com/Sirupsen/logrus
-  - external/github.com/docker/docker/pkg/idtools
-  - external/github.com/docker/docker/pkg/ioutils
-  - external/github.com/docker/docker/pkg/pools
-  - external/github.com/docker/docker/pkg/promise
-  - external/github.com/docker/docker/pkg/system
-  - external/github.com/docker/docker/pkg/longpath
-  - external/github.com/opencontainers/runc/libcontainer/user
-  - external/golang.org/x/sys/unix
-  - external/golang.org/x/net/context
+  - opts
+  - pkg/archive
+  - pkg/fileutils
+  - pkg/homedir
+  - pkg/stdcopy
+  - pkg/idtools
+  - pkg/ioutils
+  - pkg/pools
+  - pkg/promise
+  - pkg/system
+  - pkg/longpath
+- name: github.com/docker/go-units
+  version: 09dda9d4b0d748c57c14048906d3d094a58ec0c9
+- name: github.com/fsouza/go-dockerclient
+  version: d9a325f6111a14ebceefba8ff6afeb3bdaa72729
+- name: github.com/hashicorp/go-cleanhttp
+  version: ad28ea4487f05916463e2423a55166280e8254b5
 - name: github.com/influxdata/influxdb
-  version: 1d9919a0a8aca8dc705f5dd1ed4b51def8532079
+  version: 5163e74093a979f2bdc8033aecd7884159b54d1a
   subpackages:
   - client/v2
   - models
   - pkg/escape
+- name: github.com/opencontainers/runc
+  version: 57b997243d52f70a78cfea5e31ccb69f37450b5a
+  subpackages:
+  - libcontainer/user
+- name: github.com/Sirupsen/logrus
+  version: 6d9ae300aaf85d6acd2e5424081c7fcddb21dab8
+- name: golang.org/x/net
+  version: dfd9ed699ea197b58a32e0d1dcfa2be66f127ec4
+  subpackages:
+  - context
+- name: golang.org/x/sys
+  version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
+  subpackages:
+  - unix
 devImports: []

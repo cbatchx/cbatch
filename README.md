@@ -36,12 +36,39 @@ Add `$jobstarter` option to your Torque mom config.
     $ echo '$job_starter /usr/bin/cbatch' >> /var/spool/torque/mom_priv/config
     $ echo '$job_starter_run_privileged true' >> /var/spool/torque/mom_priv/config
 
+Development Requirements without Torque
+--------------------------
+- Docker installed locally
 
-Development Requirements
+In this mode you simply give cbatch some environment variables to "mock" a submitted torque job.
+
+
+Run without Torque
+------------------
+
+To run cbatch without Torque some environment variables must be "mocked". 
+
+* `PBS_O_LOGNAME` must be set to a user on the system.
+* `PBS_O_HOME` must be set to the home directory of the user.
+* `PBS_JOBID` must be set to the name of one of the jobs in `test/jobs` without .SC
+
+The config.toml file must also be configured to make it run. See the `config/config.toml`
+	
+You must also supply which shell to run the job as and the job as parameters to cbatch as Torque normally supplies cbatch with these.
+	
+	$ go build
+	$ PBS_O_LOGNAME=$USER PBS_O_HOME=$HOME PBS_JOBID=hello ./cbatch /bin/bash `pwd`/test/jobs/hello.SC
+
+
+You can also make the job interactive by running (you will end up with a shell in the container): 
+	$ PBS_O_LOGNAME=$USER PBS_O_HOME=$HOME PBS_JOBID=hello PBS_ENVIRONMENT=PBS_INTERACTIVE ./cbatch /bin/bash
+
+
+Development Requirements with Torque
 -------------------------
 - Vagrant [https://www.vagrantup.com/](https://www.vagrantup.com/)
 
-Run
+Run with Torque
 -----
 The following command builds a three part virtual Torque cluster with 1 master host and 2 slaves.
 

@@ -1,6 +1,10 @@
 package main
 
-import "os"
+import (
+	"os"
+
+	log "github.com/Sirupsen/logrus"
+)
 
 // This file parses all environment variables coming from PBS.
 
@@ -76,6 +80,11 @@ func getNewJobFromEnv() *NewJob {
 	}
 
 	args := os.Args[1:]
+
+	log.WithFields(log.Fields{
+		"pbs_env": job,
+		"args":    args,
+	}).Info("New job")
 
 	return &NewJob{
 		PBSJob: job,

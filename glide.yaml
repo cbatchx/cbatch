@@ -5,3 +5,4 @@ import:
 - package: github.com/influxdata/influxdb
   subpackages:
   - client/v2
+- package: github.com/Sirupsen/logrus

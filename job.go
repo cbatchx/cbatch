@@ -20,7 +20,7 @@ type Job struct {
 	Shell  *Shell   // The shell for the job.
 	Image  *Image   // The Image for the job.
 	Env    []string // Environment variables on the form KEY=VALUE.
-	Mounts Mounts   // Mounts need for the job to run.
+	Mounts Mounts   // Mounts needed for the job to run.
 }
 
 // AddMount to mounts

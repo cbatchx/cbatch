@@ -1,3 +1,9 @@
+0.0.5 - 19.07.2016
+### Added
+    - Support for custom boostrapping scripts
+### Removed
+    - Does not create a modified image with the new user. And use the new bootstrap script for this.
+
 0.0.4 - 25.04.2016 
 ### Added
     - Can import from source http

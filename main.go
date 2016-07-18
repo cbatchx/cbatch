@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"time"
 
-	"github.com/influxdata/influxdb/client/v2"
+	log "github.com/Sirupsen/logrus"
 )
 
 const cbatchheader = `
@@ -38,9 +37,8 @@ const joboutputheader = `
 
 var config Config
 
-var influxClient client.Client
-
 func main() {
+	defer MeasureTime(time.Now(), nil, "Total time used")
 
 	// Reads the config
 	err := ReadConfig(&config)
@@ -48,24 +46,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Connects to influxdb if it is present in the config
-	connectToInflux()
+	// Initlize the logger
+	initLog()
 
+	// Get job information from environment
 	nj := getNewJobFromEnv()
-	fmt.Printf(cbatchheader)
-
-	fmt.Printf(newjobheader)
-	fmt.Printf("%+v \n", nj)
 
 	j, err := nj.CreateJob()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf(userheader)
-	fmt.Printf("%+v\n", j.User)
-
-	fmt.Printf(joboutputheader)
 
 	d, err := NewDockerDriver()
 	if err != nil {
@@ -82,20 +72,4 @@ func main() {
 		log.Fatal(err)
 	}
 
-}
-
-func connectToInflux() {
-	if config.InfluxAvailable() {
-		c, err := client.NewHTTPClient(client.HTTPConfig{
-			Addr:     config.GetInfluxHost(),
-			Username: config.GetInfluxUser(),
-			Password: config.GetInfluxPassword(),
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		influxClient = c
-	}
 }

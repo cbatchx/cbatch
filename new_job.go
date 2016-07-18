@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"os/user"
 	"strings"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 // NewJob represents a new job
@@ -47,14 +49,47 @@ func (n *NewJob) CreateJob() (*Job, error) {
 		return nil, err
 	}
 
-	return &Job{
+	c, err := n.GetCmd(i)
+	if err != nil {
+		return nil, err
+	}
+
+	job := &Job{
 		User:   u,
-		Cmd:    n.Args,
+		Cmd:    c,
 		Shell:  s,
 		Image:  i,
 		Mounts: m,
 		Env:    e,
-	}, nil
+	}
+
+	bs, err := NewBootstrap(job)
+	if err != nil {
+		return nil, err
+	}
+
+	job.Mounts = job.Mounts.AddMount(bs.GetScriptPath(), "/bootstrap.sh", false)
+
+	log.WithFields(log.Fields{
+		"job": job,
+	}).Info("Parsed job")
+
+	return job, nil
+}
+
+// GetCmd get the command to run in the container
+func (n *NewJob) GetCmd(i *Image) ([]string, error) {
+	cmd := n.Args
+
+	// Prepend the bootstrap script
+	cmd = append([]string{"/bin/bash", "/bootstrap.sh"}, cmd...)
+
+	// Prepend the init command
+	if i.InitCmd != "" {
+		cmd = append([]string{i.InitCmd}, cmd...)
+	}
+
+	return cmd, nil
 }
 
 // GetEnv get the current Environment
@@ -124,18 +159,16 @@ func (n *NewJob) GetImage() (*Image, error) {
 		return nil, fmt.Errorf("Can not get image based on name and source.")
 	}
 
-	if config.GetImageName() != "" {
-		return &Image{
-			ImageName:   config.GetImageName(),
-			ImageSource: config.GetImageSource(),
-			Source:      false,
-		}, nil
+	source := false
+
+	if config.GetImageSource() != "" {
+		source = true
 	}
 
 	return &Image{
 		ImageName:   config.GetImageName(),
 		ImageSource: config.GetImageSource(),
-		Source:      true,
+		Source:      source,
 		Privileged:  config.GetImagePrivileged(),
 		InitCmd:     config.GetImageInit(),
 	}, nil
@@ -150,13 +183,12 @@ func (n *NewJob) addMounts(m Mounts) (Mounts, error) {
 	}
 
 	// Mount home
-	m = m.AddMount(n.PBSJob.Origin.Home, n.PBSJob.Origin.Home, true) // RW
+	// m = m.AddMount(n.PBSJob.Origin.Home, n.PBSJob.Origin.Home, true) // RW
 
 	// Mount cvmfs if present
 	if config.GetCvmfs() != "" {
 		m = m.AddMount(config.GetCvmfs(), "/cvmfs", true)
 	}
-
 
 	fmt.Println(m)
 
