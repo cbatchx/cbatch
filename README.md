@@ -23,17 +23,16 @@ After building you can run it on a torque cluster provided by vagrant.
 
 Install
 -------
-Move `config/config.toml` to `/etc/cbatch.toml` and edit to fit your system.
+Download .tar file from releases section of github.
 
-    $ sudo cp config.toml /etc/cbatch.toml
+    $ sudo mkdir -p /var/lib/cbatch
+	$ sudo tar -xvf cbatch-0.0.6-amd64linux.tar -C /var/lib/cbatch
 
-Move `cbatch` to some bin folder.
-
-    $ sudo cp cbatch /usr/bin/cbatch
+Edit `/var/lib/cbatch/config/config.toml` to fit your system.
 
 Add `$jobstarter` option to your Torque mom config.
 
-    $ echo '$job_starter /usr/bin/cbatch' >> /var/spool/torque/mom_priv/config
+    $ echo '$job_starter /var/lib/cbatch/cbatch' >> /var/spool/torque/mom_priv/config
     $ echo '$job_starter_run_privileged true' >> /var/spool/torque/mom_priv/config
 
 Development Requirements without Torque
