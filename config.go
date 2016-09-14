@@ -31,7 +31,7 @@ type influxConfig struct {
 	Present  bool
 }
 
-const configPath = "/etc/cbatch.toml"
+const configPath = "/var/lib/cbatch/config/config.toml"
 
 const configFallback = "config/config.toml"
 

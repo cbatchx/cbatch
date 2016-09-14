@@ -3,7 +3,8 @@ set -x
 
 version=0.0.6
 
-export GOOS=linux 
+export CGO_ENABLED=1
+export GOOS=linux
 export GOARCH=amd64
 
 cd ../ && go build

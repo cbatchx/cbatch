@@ -32,8 +32,9 @@ Edit `/var/lib/cbatch/config/config.toml` to fit your system.
 
 Add `$jobstarter` option to your Torque mom config.
 
-    $ echo '$job_starter /var/lib/cbatch/cbatch' >> /var/spool/torque/mom_priv/config
-    $ echo '$job_starter_run_privileged true' >> /var/spool/torque/mom_priv/config
+    $ echo '$job_starter /var/lib/cbatch/cbatch' >> /var/lib/torque/mom_priv/config
+    $ echo '$job_starter_run_privileged true' >> /var/lib/torque/mom_priv/config
+	$ sudo systemctl restart pbs_mom # On centos7 use what fits your system.
 
 Development Requirements without Torque
 --------------------------
