@@ -19,4 +19,4 @@ eval $GROUPADD
 eval $ADDUSER
 
 # Run the job as the new user.
-/bin/su -c 'exec $@' {{.User.Username}} -- "$@"
+/bin/su -s $@ {{.User.Username}} 
