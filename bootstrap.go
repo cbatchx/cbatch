@@ -38,6 +38,9 @@ func NewBootstrap(j *Job) (*Bootstrap, error) {
 		return nil, err
 	}
 
+	// Set the tmpfile to be executable
+	os.Chmod(tmpfile.Name(), 0500);
+
 	return &Bootstrap{
 		tmpfile: tmpfile.Name(),
 	}, nil

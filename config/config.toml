@@ -18,11 +18,11 @@
     #
     # Could be "centos:latest" if using Docker.
     # The docker driver will pull images from Docker Hub automatically. If name is supplied
-    # name = "centos:latest"
+    name = "centos:latest"
     # name = "cbatchx/cvm:latest"
     #
     # It can also pull docker images in tar format from source.
-    source = "http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar"
+    # source = "http://cernvm.cern.ch/releases/production/cvm-docker-3.6.5.1.tar"
     #
     # Some images requires to run in privileged mode. Use with caution the container basicly have full root access to your system.
     privileged = true
@@ -30,7 +30,7 @@
     # An init command can also be specified to run some setup of the image before use.
     # MUST be able to accept a command to run as its argument(s).
     # Ex.: /init echo Hello && echo tolo
-    init = "/init"
+    # init = "/init"
     #
     # If you supply cvmfs a path to cvmfs it will mount it at /cvmfs in all containers
     # cvmfs = "/cvmfs"

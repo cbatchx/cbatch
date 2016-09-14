@@ -1,3 +1,9 @@
+0.0.6 - 14.09.2016
+### Added
+    - Additional logging in the docker driver.
+    - Set tighter permissions on boostrap file and set it to executable.
+    - Use docker.NewVersionedClientFromEnv("") to get the Docker client env. To enable to lock down of docker API versions.
+
 0.0.5 - 19.07.2016
 ### Added
     - Support for custom boostrapping scripts

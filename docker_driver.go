@@ -19,7 +19,7 @@ type DockerDriver struct {
 
 // NewDockerDriver returns a new docker driver.
 func NewDockerDriver() (*DockerDriver, error) {
-	client, err := docker.NewClientFromEnv()
+	client, err := docker.NewVersionedClientFromEnv("") // TODO define version in config
 	if err != nil {
 		return nil, err
 	}
@@ -54,6 +54,7 @@ func (d *DockerDriver) Run(j *Job) error {
 
 	err := d.startContainer()
 	if err != nil {
+		log.Warn("Failed to start the container.")
 		return err
 	}
 
@@ -70,10 +71,15 @@ func (d *DockerDriver) Run(j *Job) error {
 		RawTerminal:  j.Shell.TTY, // Use raw terminal with tty https://godoc.org/github.com/fsouza/go-dockerclient#AttachToContainerOptions
 	})
 	if err != nil {
+		log.Fatal("Failed to attach to the container.")
 		return err
 	}
 
 	err = d.removeContainer()
+
+	if err != nil {
+		log.Fatal("Failed to remove the container.")
+	}
 
 	return err
 }
@@ -122,9 +128,12 @@ func buildBindString(mounts Mounts) []string {
 
 func (d *DockerDriver) getImage(j *Job) (string, error) {
 	if j.Image.Source {
+		log.WithFields(log.Fields{ "image": j.Image }).Info("Dowloading image from source.")
 		imageName, err := d.importImage(j.Image.ImageSource)
 		return imageName, err
 	}
+
+	log.WithFields(log.Fields{ "image": j.Image }).Info("Pulling image from docker hub.")
 	err := d.pullImage(j.Image.ImageName)
 	return j.Image.ImageName, err
 
