@@ -82,7 +82,7 @@ func (n *NewJob) GetCmd(i *Image) ([]string, error) {
 	cmd := n.Args
 
 	// Prepend the bootstrap script
-	cmd = append([]string{"/bin/bash", "/bootstrap.sh"}, cmd...)
+	cmd = append([]string{"/bootstrap.sh"}, cmd...)
 
 	// Prepend the init command
 	if i.InitCmd != "" {
@@ -189,8 +189,6 @@ func (n *NewJob) addMounts(m Mounts) (Mounts, error) {
 	if config.GetCvmfs() != "" {
 		m = m.AddMount(config.GetCvmfs(), "/cvmfs", true)
 	}
-
-	fmt.Println(m)
 
 	return m, nil
 }
