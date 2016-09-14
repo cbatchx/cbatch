@@ -13,7 +13,7 @@ type Bootstrap struct {
 	tmpfile string
 }
 
-const templateFile = "config/bootstrap.tmpl.sh"
+const templateFile = "/var/lib/cbatch/config/bootstrap.tmpl.sh"
 
 // NewBootstrap generates a boostrap script from the boostrap template.
 // After the boostrap struct is initalized it can be passed to for instance a driver.
