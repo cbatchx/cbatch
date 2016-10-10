@@ -23,6 +23,7 @@ type imageConfig struct {
 	Init       string
 	Cvmfs      string
 	MountHome  bool `toml:"mount_home"`
+	MountHosts bool `toml:"mount_hosts"`
 }
 
 type influxConfig struct {
@@ -102,6 +103,11 @@ func (c *Config) GetCvmfs() string {
 // MountHome returns a boolean to mount the home folder or not
 func (c *Config) MountHome() bool {
 	return c.Image.MountHome
+}
+
+// MountHosts returns a boolean to mount /etc/hosts or not
+func (c *Config) MountHosts() bool {
+	return c.Image.MountHosts
 }
 
 // InfluxAvailable check if influxdb is configured.

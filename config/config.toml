@@ -38,6 +38,10 @@
     # Mount the home folder of the user submitting the job  true or false 
     mount_home = true
     
+    # Mount the /etc/hosts file in some cases it is needed to know the hosts file of the host.
+    mount_hosts = true
+    
+    
 # This section describes a influxdb instance. cbatch will write data
 # points to influxdb if configured.
 #

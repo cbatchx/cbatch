@@ -187,9 +187,14 @@ func (n *NewJob) addMounts(m Mounts) (Mounts, error) {
 		m = m.AddMount(n.PBSJob.Origin.Home, n.PBSJob.Origin.Home, true)
 	}
 
+	// Mount hosts file
+	if config.MountHosts() {
+		m = m.AddMount("/etc/hosts", "/etc/hosts", false) // Read only
+	}
+
 	// Mount cvmfs
 	if config.GetCvmfs() != "" {
-		m = m.AddMount(config.GetCvmfs(), "/cvmfs", true)
+		m = m.AddMount(config.GetCvmfs(), "/cvmfs", false) // Read only
 	}
 
 	return m, nil
