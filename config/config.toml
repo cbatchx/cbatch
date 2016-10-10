@@ -34,6 +34,9 @@
     #
     # If you supply cvmfs a path to cvmfs it will mount it at /cvmfs in all containers
     # cvmfs = "/cvmfs"
+    #
+    # Mount the home folder of the user submitting the job  true or false 
+    mount_home = true
     
 # This section describes a influxdb instance. cbatch will write data
 # points to influxdb if configured.
