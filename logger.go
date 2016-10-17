@@ -16,7 +16,8 @@ func configureInflux() {
 		log.Info("Connecting to influxdb: " + config.GetInfluxHost())
 
 		cnf := &logrus_influxdb.Config{
-			Tags: []string{"cbatch"}, // use the following tags
+			Tags:     []string{"cbatch"}, // use the following tags
+			Database: config.GetInfluxDatabase(),
 		}
 
 		c, err := client.NewHTTPClient(client.HTTPConfig{
