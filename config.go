@@ -30,6 +30,7 @@ type influxConfig struct {
 	Host     string
 	User     string
 	Password string
+	Database string
 	Present  bool
 }
 
@@ -138,6 +139,19 @@ func (c *Config) GetInfluxPassword() string {
 		return ""
 	}
 	return c.Influx.Password
+}
+
+// GetInfluxDatabase get the database name
+func (c *Config) GetInfluxDatabase() string {
+	if !c.Influx.Present {
+		return ""
+	}
+
+	if c.Influx.Database == "" {
+		return "cbatch"
+	}
+
+	return c.Influx.Database
 }
 
 // GetConfigPath return path where config was read from.

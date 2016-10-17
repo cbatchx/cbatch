@@ -62,3 +62,6 @@
     # user = "test"
     # Password for the influxdb user.
     # password = "test"
+    # 
+    # What database to use. Defaults to cbatch
+    # database = "cbatch"    
