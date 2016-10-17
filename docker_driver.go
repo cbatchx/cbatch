@@ -32,7 +32,7 @@ func NewDockerDriver() (*DockerDriver, error) {
 
 // Prepare Implementation of the prepare interface.
 func (d *DockerDriver) Prepare(j *Job) error {
-	defer MeasureTime(time.Now(), log.Fields{"job": j}, "Container prepared.")
+	defer MeasureTime(time.Now(), log.Fields{"job": j, "job_id": j.ID}, "Container prepared.")
 
 	imageName, err := d.getImage(j)
 	if err != nil {
@@ -50,7 +50,7 @@ func (d *DockerDriver) Prepare(j *Job) error {
 
 // Run implementation of the driver interface.
 func (d *DockerDriver) Run(j *Job) error {
-	defer MeasureTime(time.Now(), log.Fields{"job": j}, "Job finished.")
+	defer MeasureTime(time.Now(), log.Fields{"job": j, "job_id": j.ID}, "Job finished.")
 
 	err := d.startContainer()
 	if err != nil {
@@ -128,12 +128,12 @@ func buildBindString(mounts Mounts) []string {
 
 func (d *DockerDriver) getImage(j *Job) (string, error) {
 	if j.Image.Source {
-		log.WithFields(log.Fields{ "image": j.Image }).Info("Dowloading image from source.")
+		log.WithFields(log.Fields{"image": j.Image}).Info("Dowloading image from source.")
 		imageName, err := d.importImage(j.Image.ImageSource)
 		return imageName, err
 	}
 
-	log.WithFields(log.Fields{ "image": j.Image }).Info("Pulling image from docker hub.")
+	log.WithFields(log.Fields{"image": j.Image}).Info("Pulling image from docker hub.")
 	err := d.pullImage(j.Image.ImageName)
 	return j.Image.ImageName, err
 

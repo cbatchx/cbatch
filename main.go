@@ -38,7 +38,9 @@ const joboutputheader = `
 var config Config
 
 func main() {
-	defer MeasureTime(time.Now(), nil, "Total time used")
+
+	// Measure time from the start
+	start := time.Now()
 
 	// Reads the config
 	err := ReadConfig(&config)
@@ -71,5 +73,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	MeasureTime(start, log.Fields{"job": j, "job_id": j.ID}, "Total time used")
 
 }
