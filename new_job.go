@@ -55,6 +55,7 @@ func (n *NewJob) CreateJob() (*Job, error) {
 	}
 
 	job := &Job{
+		ID:     n.PBSJob.JobID,
 		User:   u,
 		Cmd:    c,
 		Shell:  s,
