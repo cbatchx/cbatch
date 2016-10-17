@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/BurntSushi/toml"
 	log "github.com/Sirupsen/logrus"
 )
@@ -34,24 +36,18 @@ type influxConfig struct {
 	Present  bool
 }
 
-const configPath = "/var/lib/cbatch/config/config.toml"
+const configPathDefault = "/var/lib/cbatch/config/config.toml"
 
 const configFallback = "config/config.toml"
 
 // ReadConfig reads the config and returns it.
 func ReadConfig(c *Config) error {
 
+	configPath := c.GetConfigPath()
+
 	md, err := toml.DecodeFile(configPath, c)
 	if err != nil {
-		log.Error(err)
-
-		log.Warn("Falling back to: ", configFallback)
-		md, err = toml.DecodeFile(configFallback, c)
-
-		if err != nil {
-			log.Fatal("Failed to read fallback config. ", err)
-		}
-
+		log.Fatal("Failed to read config. ", err)
 	}
 
 	if md.IsDefined("influx") {
@@ -156,5 +152,12 @@ func (c *Config) GetInfluxDatabase() string {
 
 // GetConfigPath return path where config was read from.
 func (c *Config) GetConfigPath() string {
+	configPath := configPathDefault
+
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		log.Warn("Could not find " + configPathDefault + " falling back to " + configFallback)
+		configPath = configFallback
+	}
+
 	return configPath
 }

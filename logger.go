@@ -1,12 +1,19 @@
 package main
 
 import (
+	"os"
+
 	"github.com/Abramovic/logrus_influxdb"
 	log "github.com/Sirupsen/logrus"
 	client "github.com/influxdata/influxdb/client/v2"
 )
 
 func initLog() {
+	log.SetOutput(os.Stdout)
+}
+
+// MUST BE CALLED AFTER CONFIG IS READ (ReadConfig())
+func configureLog() {
 	configureInflux()
 }
 

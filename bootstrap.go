@@ -13,11 +13,20 @@ type Bootstrap struct {
 	tmpfile string
 }
 
-const templateFile = "/var/lib/cbatch/config/bootstrap.tmpl.sh"
+const templateFileDefault = "/var/lib/cbatch/config/bootstrap.tmpl.sh"
+
+const templateFileFallback = "config/bootstrap.tmpl.sh"
 
 // NewBootstrap generates a boostrap script from the boostrap template.
 // After the boostrap struct is initalized it can be passed to for instance a driver.
 func NewBootstrap(j *Job) (*Bootstrap, error) {
+
+	templateFile := templateFileDefault
+
+	if _, err := os.Stat(templateFile); os.IsNotExist(err) {
+		log.Warn("Could not find " + templateFileDefault + " falling back to config/bootstrap.tmpl.sh")
+		templateFile = templateFileFallback
+	}
 
 	// Read template.
 	var t = template.Must(template.ParseFiles(templateFile))
@@ -39,7 +48,7 @@ func NewBootstrap(j *Job) (*Bootstrap, error) {
 	}
 
 	// Set the tmpfile to be executable
-	os.Chmod(tmpfile.Name(), 0500);
+	os.Chmod(tmpfile.Name(), 0500)
 
 	return &Bootstrap{
 		tmpfile: tmpfile.Name(),

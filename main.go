@@ -42,14 +42,17 @@ func main() {
 	// Measure time from the start
 	start := time.Now()
 
+	// Initialize the logger
+	initLog()
+
 	// Reads the config
 	err := ReadConfig(&config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Initlize the logger
-	initLog()
+	// Configure the logger
+	configureLog()
 
 	// Get job information from environment
 	nj := getNewJobFromEnv()
