@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"time"
+	"syscall"
 )
 
 const cbatchheader = `
@@ -51,7 +52,7 @@ func main() {
 
 	// Signal handling
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
 
 	go func() {
 		sig := <-sigs
