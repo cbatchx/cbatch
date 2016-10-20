@@ -1,9 +1,12 @@
 package main
 
 import (
-	"time"
-
+	"fmt"
 	log "github.com/Sirupsen/logrus"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 const cbatchheader = `
@@ -17,17 +20,6 @@ const cbatchheader = `
 
 Contain all the jobs!
 `
-const newjobheader = `
------------------------------------------------------------------------------------
-| Job:                                                                            |
------------------------------------------------------------------------------------
-`
-
-const userheader = `
------------------------------------------------------------------------------------
-| User:                                                                           |
------------------------------------------------------------------------------------
-`
 
 const joboutputheader = `
 -----------------------------------------------------------------------------------
@@ -35,9 +27,16 @@ const joboutputheader = `
 -----------------------------------------------------------------------------------
 `
 
+const joboutputend = `
+-----------------------------------------------------------------------------------
+| End of job output                                                                |
+-----------------------------------------------------------------------------------
+`
+
 var config Config
 
 func main() {
+	fmt.Println(cbatchheader)
 
 	// Measure time from the start
 	start := time.Now()
@@ -45,8 +44,25 @@ func main() {
 	// Initialize the logger
 	initLog()
 
+	// Create the docker driver.
+	d, err := NewDockerDriver()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Signal handling
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		sig := <-sigs
+		log.Warn("Got signal " + sig.String() + " . Stopping container.")
+		d.Abort()
+		os.Exit(0)
+	}()
+
 	// Reads the config
-	err := ReadConfig(&config)
+	err = ReadConfig(&config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,20 +78,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	d, err := NewDockerDriver()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	err = d.Prepare(j)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	fmt.Println(joboutputheader)
+
 	err = d.Run(j)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println(joboutputend)
 
 	MeasureTime(start, log.Fields{"job": j, "job_id": j.ID}, "Total time used")
 

@@ -84,6 +84,19 @@ func (d *DockerDriver) Run(j *Job) error {
 	return err
 }
 
+func (d *DockerDriver) Abort() error {
+	// No container created nothing to do
+	if d.container == nil {
+		return nil
+	}
+	// Remove Container and Force kill if needed.
+	return d.client.RemoveContainer(docker.RemoveContainerOptions{
+		ID:            d.container.ID,
+		Force:         true,
+		RemoveVolumes: true,
+	})
+}
+
 func (d *DockerDriver) startContainer() error {
 	err := d.client.StartContainer(d.container.ID, d.container.HostConfig)
 	return err

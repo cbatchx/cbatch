@@ -6,4 +6,6 @@ type Driver interface {
 	Prepare(j *Job) error
 	// Runs the prepared image.
 	Run(j *Job) error
+	// Abort
+	Abort(j *Job) error
 }
