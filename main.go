@@ -5,7 +5,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
 )
 
@@ -52,7 +51,7 @@ func main() {
 
 	// Signal handling
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sigs)
 
 	go func() {
 		sig := <-sigs
@@ -83,14 +82,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(joboutputheader)
-
 	err = d.Run(j)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(joboutputend)
 
 	MeasureTime(start, log.Fields{"job": j, "job_id": j.ID}, "Total time used")
 
