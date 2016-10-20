@@ -5,8 +5,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"os"
 	"os/signal"
-	"time"
 	"syscall"
+	"time"
 )
 
 const cbatchheader = `
@@ -52,13 +52,22 @@ func main() {
 
 	// Signal handling
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
+	signal.Notify(sigs)
 
 	go func() {
-		sig := <-sigs
-		log.Warn("Got signal " + sig.String() + " . Stopping container.")
-		d.Abort()
-		os.Exit(0)
+
+		for {
+			sig := <-sigs
+
+			switch sig {
+			case syscall.SIGINT:
+				log.Warn("Got signal " + sig.String() + " . Terminating")
+				d.Abort()
+				os.Exit(0)
+			default:
+				log.Warn("Got signal " + sig.String() + " . Doing nothing.")
+			}
+		}
 	}()
 
 	// Reads the config
