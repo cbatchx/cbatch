@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"os/user"
@@ -133,10 +134,13 @@ func (n *NewJob) GetUser() (*User, error) {
 func (n *NewJob) GetShell() (*Shell, error) {
 	// If we are in interactive mode, don't tee.
 	if n.PBSJob.Environment == "PBS_INTERACTIVE" {
+		r, w := io.Pipe()
+		go io.Copy(w, os.Stdin)
+
 		return &Shell{
 			Stdout: os.Stdout,
 			Stderr: os.Stderr,
-			Stdin:  os.Stdin,
+			Stdin:  r,
 			TTY:    true,
 		}, nil
 	}
